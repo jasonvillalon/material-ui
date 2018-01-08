@@ -1,5 +1,3 @@
-// @flow
-
 import React from 'react';
 import withRoot from 'docs/src/modules/components/withRoot';
 import MarkdownDocs from 'docs/src/modules/components/MarkdownDocs';
@@ -31,11 +29,25 @@ module.exports = require('fs')
   .readFileSync(require.resolve('docs/src/pages/demos/buttons/FloatingActionButtons'), 'utf8')
 `,
         },
+        'pages/demos/buttons/FloatingActionButtonZoom.js': {
+          js: require('docs/src/pages/demos/buttons/FloatingActionButtonZoom').default,
+          raw: preval`
+module.exports = require('fs')
+  .readFileSync(require.resolve('docs/src/pages/demos/buttons/FloatingActionButtonZoom'), 'utf8')
+`,
+        },
         'pages/demos/buttons/IconButtons.js': {
           js: require('docs/src/pages/demos/buttons/IconButtons').default,
           raw: preval`
 module.exports = require('fs')
   .readFileSync(require.resolve('docs/src/pages/demos/buttons/IconButtons'), 'utf8')
+`,
+        },
+        'pages/demos/buttons/IconLabelButtons.js': {
+          js: require('docs/src/pages/demos/buttons/IconLabelButtons').default,
+          raw: preval`
+module.exports = require('fs')
+  .readFileSync(require.resolve('docs/src/pages/demos/buttons/IconLabelButtons'), 'utf8')
 `,
         },
         'pages/demos/buttons/ButtonBases.js': {

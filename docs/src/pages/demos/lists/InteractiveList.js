@@ -1,5 +1,3 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -25,7 +23,7 @@ const styles = theme => ({
     maxWidth: 752,
   },
   demo: {
-    background: theme.palette.background.paper,
+    backgroundColor: theme.palette.background.paper,
   },
   title: {
     margin: `${theme.spacing.unit * 4}px 0 ${theme.spacing.unit * 2}px`,
@@ -47,7 +45,7 @@ class InteractiveList extends React.Component {
   };
 
   render() {
-    const classes = this.props.classes;
+    const { classes } = this.props;
     const { dense, secondary } = this.state;
 
     return (

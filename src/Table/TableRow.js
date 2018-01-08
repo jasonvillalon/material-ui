@@ -1,30 +1,31 @@
-// @flow
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import withStyles from '../styles/withStyles';
 
-export const styles = (theme: Object) => ({
+export const styles = theme => ({
   root: {
+    color: 'inherit',
+    display: 'table-row',
     height: 48,
     '&:focus': {
       outline: 'none',
     },
+    verticalAlign: 'middle',
   },
   head: {
-    height: 64,
+    height: 56,
   },
   footer: {
     height: 56,
   },
   hover: {
     '&:hover': {
-      background: theme.palette.background.contentFrame,
+      backgroundColor: theme.palette.background.contentFrame,
     },
   },
   selected: {
-    background: theme.palette.background.appBar,
+    backgroundColor: theme.palette.background.appBar,
   },
 });
 
@@ -34,9 +35,9 @@ export const styles = (theme: Object) => ({
  */
 function TableRow(props, context) {
   const {
+    children,
     classes,
     className: classNameProp,
-    children,
     component: Component,
     hover,
     selected,
@@ -79,7 +80,7 @@ TableRow.propTypes = {
    * The component used for the root node.
    * Either a string to use a DOM element or a component.
    */
-  component: PropTypes.string,
+  component: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   /**
    * If `true`, the table row will shade on hover.
    */
@@ -91,9 +92,9 @@ TableRow.propTypes = {
 };
 
 TableRow.defaultProps = {
+  component: 'tr',
   hover: false,
   selected: false,
-  component: 'tr',
 };
 
 TableRow.contextTypes = {

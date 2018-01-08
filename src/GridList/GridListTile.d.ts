@@ -1,10 +1,15 @@
 import * as React from 'react';
-import { StyledComponent } from '..';
+import { StandardProps } from '..';
 
-export interface GridListTileProps {
+export interface GridListTileProps
+  extends StandardProps<React.HTMLAttributes<HTMLLIElement>, GridListTileClassKey> {
   cols?: number;
-  component?: React.ReactElement<any> | string;
-  row?: number;
+  component?: React.ReactType<GridListTileProps>;
+  rows?: number;
 }
 
-export default class GridListTile extends StyledComponent<GridListTileProps> {}
+export type GridListTileClassKey = 'root' | 'tile' | 'imgFullHeight' | 'imgFullWidth';
+
+declare const GridListTile: React.ComponentType<GridListTileProps>;
+
+export default GridListTile;

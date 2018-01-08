@@ -1,5 +1,3 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-
 import React from 'react';
 import Button from 'material-ui/Button';
 import Snackbar from 'material-ui/Snackbar';
@@ -14,7 +12,7 @@ class FadeSnackbar extends React.Component {
     this.setState({ open: true });
   };
 
-  handleRequestClose = () => {
+  handleClose = () => {
     this.setState({ open: false });
   };
 
@@ -24,7 +22,7 @@ class FadeSnackbar extends React.Component {
         <Button onClick={this.handleClick}>Open with Fade Transition</Button>
         <Snackbar
           open={this.state.open}
-          onRequestClose={this.handleRequestClose}
+          onClose={this.handleClose}
           transition={Fade}
           SnackbarContentProps={{
             'aria-describedby': 'message-id',

@@ -1,5 +1,3 @@
-// @flow weak
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -38,7 +36,7 @@ const styles = theme => ({
 });
 
 function MediaControlCard(props) {
-  const classes = props.classes;
+  const { classes, theme } = props;
 
   return (
     <div>
@@ -52,13 +50,13 @@ function MediaControlCard(props) {
           </CardContent>
           <div className={classes.controls}>
             <IconButton aria-label="Previous">
-              <SkipPreviousIcon />
+              {theme.direction === 'rtl' ? <SkipNextIcon /> : <SkipPreviousIcon />}
             </IconButton>
             <IconButton aria-label="Play/pause">
               <PlayArrowIcon className={classes.playIcon} />
             </IconButton>
             <IconButton aria-label="Next">
-              <SkipNextIcon />
+              {theme.direction === 'rtl' ? <SkipPreviousIcon /> : <SkipNextIcon />}
             </IconButton>
           </div>
         </div>
@@ -74,6 +72,7 @@ function MediaControlCard(props) {
 
 MediaControlCard.propTypes = {
   classes: PropTypes.object.isRequired,
+  theme: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(MediaControlCard);
+export default withStyles(styles, { withTheme: true })(MediaControlCard);

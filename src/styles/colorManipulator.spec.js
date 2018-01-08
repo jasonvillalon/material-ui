@@ -1,6 +1,5 @@
-// @flow
-
 import { assert } from 'chai';
+import consoleErrorMock from '../../test/utils/consoleErrorMock';
 import {
   convertColorToString,
   convertHexToRGB,
@@ -14,31 +13,51 @@ import {
 } from './colorManipulator';
 
 describe('utils/colorManipulator', () => {
+  beforeEach(() => {
+    consoleErrorMock.spy();
+  });
+
+  afterEach(() => {
+    consoleErrorMock.reset();
+  });
+
   describe('convertColorToString', () => {
     it('converts a decomposed rgb color object to a string` ', () => {
       assert.strictEqual(
-        convertColorToString({ type: 'rgb', values: [255, 255, 255] }),
+        convertColorToString({
+          type: 'rgb',
+          values: [255, 255, 255],
+        }),
         'rgb(255, 255, 255)',
       );
     });
 
     it('converts a decomposed rgba color object to a string` ', () => {
       assert.strictEqual(
-        convertColorToString({ type: 'rgba', values: [255, 255, 255, 0.5] }),
+        convertColorToString({
+          type: 'rgba',
+          values: [255, 255, 255, 0.5],
+        }),
         'rgba(255, 255, 255, 0.5)',
       );
     });
 
     it('converts a decomposed hsl color object to a string` ', () => {
       assert.strictEqual(
-        convertColorToString({ type: 'hsl', values: [100, 50, 25] }),
+        convertColorToString({
+          type: 'hsl',
+          values: [100, 50, 25],
+        }),
         'hsl(100, 50%, 25%)',
       );
     });
 
     it('converts a decomposed hsla color object to a string` ', () => {
       assert.strictEqual(
-        convertColorToString({ type: 'hsla', values: [100, 50, 25, 0.5] }),
+        convertColorToString({
+          type: 'hsla',
+          values: [100, 50, 25, 0.5],
+        }),
         'hsla(100, 50%, 25%, 0.5)',
       );
     });
@@ -81,33 +100,33 @@ describe('utils/colorManipulator', () => {
   });
 
   describe('getContrastRatio', () => {
-    it('returns a ratio of 21 for black : white', () => {
+    it('returns a ratio black : white', () => {
       assert.strictEqual(getContrastRatio('#000', '#FFF'), 21);
     });
 
-    it('returns a ratio of 1 for black : black', () => {
+    it('returns a ratio black : black', () => {
       assert.strictEqual(getContrastRatio('#000', '#000'), 1);
     });
 
-    it('returns a ratio of 1 for white : white', () => {
+    it('returns a ratio white : white', () => {
       assert.strictEqual(getContrastRatio('#FFF', '#FFF'), 1);
     });
 
-    it('returns a ratio of 3.92 for dark-grey : light-grey', () => {
-      assert.strictEqual(getContrastRatio('#707070', '#E5E5E5'), 3.93);
+    it('returns a ratio for dark-grey : light-grey', () => {
+      assert.approximately(getContrastRatio('#707070', '#E5E5E5'), 3.93, 0.01);
     });
 
-    it('returns a ratio of 3.93 for black : light-grey', () => {
-      assert.strictEqual(getContrastRatio('#000', '#888'), 5.92);
+    it('returns a ratio for black : light-grey', () => {
+      assert.approximately(getContrastRatio('#000', '#888'), 5.92, 0.01);
     });
   });
 
   describe('getLuminance', () => {
-    it('returns a luminance of 1 for rgb white', () => {
+    it('returns a valid luminance for rgb white', () => {
       assert.strictEqual(getLuminance('rgb(0, 0, 0)'), 0);
     });
 
-    it('returns a luminance of 1 for rgb white', () => {
+    it('returns a valid luminance for rgb white', () => {
       assert.strictEqual(getLuminance('rgb(255, 255, 255)'), 1);
     });
 
@@ -119,7 +138,7 @@ describe('utils/colorManipulator', () => {
       assert.strictEqual(getLuminance('rgb(255, 127, 0)'), 0.364);
     });
 
-    it('returns a normalized luminance from an hsl color', () => {
+    it('returns a valid luminance from an hsl color', () => {
       assert.strictEqual(getLuminance('hsl(100, 100%, 50%)'), 0.5);
     });
 
@@ -173,10 +192,12 @@ describe('utils/colorManipulator', () => {
 
     it("doesn't overshoot if an above-range coefficient is supplied", () => {
       assert.strictEqual(darken('rgb(0, 127, 255)', 1.5), 'rgb(0, 0, 0)');
+      assert.strictEqual(consoleErrorMock.callCount(), 1);
     });
 
     it("doesn't overshoot if a below-range coefficient is supplied", () => {
       assert.strictEqual(darken('rgb(0, 127, 255)', -0.1), 'rgb(0, 127, 255)');
+      assert.strictEqual(consoleErrorMock.callCount(), 1);
     });
 
     it('darkens rgb white to black when coefficient is 1', () => {
@@ -223,10 +244,12 @@ describe('utils/colorManipulator', () => {
 
     it("doesn't overshoot if an above-range coefficient is supplied", () => {
       assert.strictEqual(lighten('rgb(0, 127, 255)', 1.5), 'rgb(255, 255, 255)');
+      assert.strictEqual(consoleErrorMock.callCount(), 1);
     });
 
     it("doesn't overshoot if a below-range coefficient is supplied", () => {
       assert.strictEqual(lighten('rgb(0, 127, 255)', -0.1), 'rgb(0, 127, 255)');
+      assert.strictEqual(consoleErrorMock.callCount(), 1);
     });
 
     it('lightens rgb black to white when coefficient is 1', () => {

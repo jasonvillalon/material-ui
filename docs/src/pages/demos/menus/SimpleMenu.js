@@ -1,28 +1,27 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-
 import React from 'react';
 import Button from 'material-ui/Button';
 import Menu, { MenuItem } from 'material-ui/Menu';
 
 class SimpleMenu extends React.Component {
   state = {
-    anchorEl: undefined,
-    open: false,
+    anchorEl: null,
   };
 
   handleClick = event => {
-    this.setState({ open: true, anchorEl: event.currentTarget });
+    this.setState({ anchorEl: event.currentTarget });
   };
 
-  handleRequestClose = () => {
-    this.setState({ open: false });
+  handleClose = () => {
+    this.setState({ anchorEl: null });
   };
 
   render() {
+    const { anchorEl } = this.state;
+
     return (
       <div>
         <Button
-          aria-owns={this.state.open ? 'simple-menu' : null}
+          aria-owns={anchorEl ? 'simple-menu' : null}
           aria-haspopup="true"
           onClick={this.handleClick}
         >
@@ -30,13 +29,13 @@ class SimpleMenu extends React.Component {
         </Button>
         <Menu
           id="simple-menu"
-          anchorEl={this.state.anchorEl}
-          open={this.state.open}
-          onRequestClose={this.handleRequestClose}
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={this.handleClose}
         >
-          <MenuItem onClick={this.handleRequestClose}>Profile</MenuItem>
-          <MenuItem onClick={this.handleRequestClose}>My account</MenuItem>
-          <MenuItem onClick={this.handleRequestClose}>Logout</MenuItem>
+          <MenuItem onClick={this.handleClose}>Profile</MenuItem>
+          <MenuItem onClick={this.handleClose}>My account</MenuItem>
+          <MenuItem onClick={this.handleClose}>Logout</MenuItem>
         </Menu>
       </div>
     );

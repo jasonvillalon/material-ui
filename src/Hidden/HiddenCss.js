@@ -1,79 +1,63 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-
 import React from 'react';
+import PropTypes from 'prop-types';
 import warning from 'warning';
-import classNames from 'classnames';
-import { keys as breakpoints } from '../styles/createBreakpoints';
+import { keys as breakpointKeys } from '../styles/createBreakpoints';
 import { capitalizeFirstLetter } from '../utils/helpers';
 import withStyles from '../styles/withStyles';
-import type { HiddenProps } from './types';
 
-type DefaultProps = {
-  classes: Object,
-};
-
-export type Props = HiddenProps & {
-  /**
-   * Useful to extend the style applied to components.
-   */
-  classes?: Object,
-};
-
-function generateStyles(theme) {
+const styles = theme => {
   const hidden = {
     display: 'none',
   };
 
-  return theme.breakpoints.keys.reduce((styles, key) => {
-    styles[`only${capitalizeFirstLetter(key)}`] = {
+  return breakpointKeys.reduce((acc, key) => {
+    acc[`only${capitalizeFirstLetter(key)}`] = {
       [theme.breakpoints.only(key)]: hidden,
     };
-    styles[`${key}Up`] = {
+    acc[`${key}Up`] = {
       [theme.breakpoints.up(key)]: hidden,
     };
-    styles[`${key}Down`] = {
+    acc[`${key}Down`] = {
       [theme.breakpoints.down(key)]: hidden,
     };
 
-    return styles;
+    return acc;
   }, {});
-}
-
-const styles = (theme: Object) => generateStyles(theme);
-
-type AllProps = DefaultProps & Props;
+};
 
 /**
  * @ignore - internal component.
  */
-function HiddenCss(props: AllProps) {
+function HiddenCss(props: Props) {
   const {
     children,
     classes,
-    only,
-    xsUp,
-    smUp,
-    mdUp,
+    lgDown,
     lgUp,
+    mdDown,
+    mdUp,
+    only,
+    smDown,
+    smUp,
+    xlDown,
     xlUp,
     xsDown,
-    smDown,
-    mdDown,
-    lgDown,
-    xlDown,
+    xsUp,
     ...other
   } = props;
 
   warning(
     Object.keys(other).length === 0 ||
       (Object.keys(other).length === 1 && other.hasOwnProperty('ref')),
-    `Material-UI: unsupported properties received ${JSON.stringify(other)} by \`<Hidden />\`.`,
+    `Material-UI: unsupported properties received ${Object.keys(other).join(
+      ', ',
+    )} by \`<Hidden />\`.`,
   );
 
   const className = [];
 
-  for (let i = 0; i < breakpoints.length; i += 1) {
-    const breakpoint = breakpoints[i];
+  for (let i = 0; i < breakpointKeys.length; i += 1) {
+    const breakpoint = breakpointKeys[i];
     const breakpointUp = props[`${breakpoint}Up`];
     const breakpointDown = props[`${breakpoint}Down`];
 
@@ -86,16 +70,92 @@ function HiddenCss(props: AllProps) {
   }
 
   if (only) {
-    className.push(classes[`only${capitalizeFirstLetter(only)}`]);
+    const onlyBreakpoints = Array.isArray(only) ? only : [only];
+    onlyBreakpoints.forEach(breakpoint => {
+      className.push(classes[`only${capitalizeFirstLetter(breakpoint)}`]);
+    });
   }
 
-  if (!React.isValidElement(children)) {
-    return null;
-  }
-
-  return React.cloneElement(children, {
-    className: classNames(children.props.className, className.join(' ')),
-  });
+  return <span className={className}>{children}</span>;
 }
+
+HiddenCss.propTypes = {
+  /**
+   * The content of the component.
+   */
+  children: PropTypes.node,
+  /**
+   * Useful to extend the style applied to components.
+   */
+  classes: PropTypes.object.isRequired,
+  /**
+   * @ignore
+   */
+  className: PropTypes.string,
+  /**
+   * Specify which implementation to use.  'js' is the default, 'css' works better for server
+   * side rendering.
+   */
+  implementation: PropTypes.oneOf(['js', 'css']),
+  /**
+   * You can use this property when choosing the `js` implementation with server side rendering.
+   *
+   * As `window.innerWidth` is unavailable on the server,
+   * we default to rendering an empty componenent during the first mount.
+   * In some situation you might want to use an heristic to approximate
+   * the screen width of the client browser screen width.
+   *
+   * For instance, you could be using the user-agent or the client-hints.
+   * http://caniuse.com/#search=client%20hint
+   */
+  initialWidth: PropTypes.number,
+  /**
+   * If true, screens this size and down will be hidden.
+   */
+  lgDown: PropTypes.bool,
+  /**
+   * If true, screens this size and up will be hidden.
+   */
+  lgUp: PropTypes.bool,
+  /**
+   * If true, screens this size and down will be hidden.
+   */
+  mdDown: PropTypes.bool,
+  /**
+   * If true, screens this size and up will be hidden.
+   */
+  mdUp: PropTypes.bool,
+  /**
+   * Hide the given breakpoint(s).
+   */
+  only: PropTypes.oneOfType([
+    PropTypes.oneOf(['xs', 'sm', 'md', 'lg', 'xl']),
+    PropTypes.arrayOf(PropTypes.oneOf(['xs', 'sm', 'md', 'lg', 'xl'])),
+  ]),
+  /**
+   * If true, screens this size and down will be hidden.
+   */
+  smDown: PropTypes.bool,
+  /**
+   * If true, screens this size and up will be hidden.
+   */
+  smUp: PropTypes.bool,
+  /**
+   * If true, screens this size and down will be hidden.
+   */
+  xlDown: PropTypes.bool,
+  /**
+   * If true, screens this size and up will be hidden.
+   */
+  xlUp: PropTypes.bool,
+  /**
+   * If true, screens this size and down will be hidden.
+   */
+  xsDown: PropTypes.bool,
+  /**
+   * If true, screens this size and up will be hidden.
+   */
+  xsUp: PropTypes.bool,
+};
 
 export default withStyles(styles, { name: 'MuiHiddenCss' })(HiddenCss);

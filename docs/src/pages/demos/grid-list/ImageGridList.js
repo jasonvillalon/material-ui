@@ -1,5 +1,3 @@
-// @flow weak
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -12,7 +10,7 @@ const styles = theme => ({
     flexWrap: 'wrap',
     justifyContent: 'space-around',
     overflow: 'hidden',
-    background: theme.palette.background.paper,
+    backgroundColor: theme.palette.background.paper,
   },
   gridList: {
     width: 500,
@@ -42,7 +40,7 @@ const styles = theme => ({
  * ];
  */
 function ImageGridList(props) {
-  const classes = props.classes;
+  const { classes } = props;
 
   return (
     <div className={classes.root}>

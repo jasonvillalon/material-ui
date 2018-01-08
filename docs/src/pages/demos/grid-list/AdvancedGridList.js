@@ -1,5 +1,3 @@
-// @flow weak
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -14,7 +12,7 @@ const styles = theme => ({
     flexWrap: 'wrap',
     justifyContent: 'space-around',
     overflow: 'hidden',
-    background: theme.palette.background.paper,
+    backgroundColor: theme.palette.background.paper,
   },
   gridList: {
     width: 500,
@@ -26,6 +24,9 @@ const styles = theme => ({
     background:
       'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, ' +
       'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
+  },
+  icon: {
+    color: 'white',
   },
 });
 
@@ -48,7 +49,7 @@ const styles = theme => ({
  * ];
  */
 function AdvancedGridList(props) {
-  const classes = props.classes;
+  const { classes } = props;
 
   return (
     <div className={classes.root}>
@@ -60,8 +61,8 @@ function AdvancedGridList(props) {
               title={tile.title}
               titlePosition="top"
               actionIcon={
-                <IconButton>
-                  <StarBorderIcon color="white" />
+                <IconButton className={classes.icon}>
+                  <StarBorderIcon />
                 </IconButton>
               }
               actionPosition="left"

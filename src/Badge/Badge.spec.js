@@ -1,5 +1,3 @@
-// @flow
-
 import React from 'react';
 import { assert } from 'chai';
 import { createShallow, getClasses } from '../test-utils';
@@ -84,9 +82,7 @@ describe('<Badge />', () => {
   });
 
   it('renders children and overwrite root styles', () => {
-    const style = {
-      backgroundColor: 'red',
-    };
+    const style = { backgroundColor: 'red' };
     const wrapper = shallow(
       <Badge badgeContent={10} style={style}>
         {testChildren}
@@ -95,7 +91,7 @@ describe('<Badge />', () => {
 
     assert.strictEqual(wrapper.contains(testChildren), true, 'should contain the children');
     assert.strictEqual(
-      wrapper.node.props.style.backgroundColor,
+      wrapper.props().style.backgroundColor,
       style.backgroundColor,
       'should overwrite badge backgroundColor',
     );

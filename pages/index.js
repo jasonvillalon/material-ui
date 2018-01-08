@@ -1,5 +1,3 @@
-// @flow
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import compose from 'recompose/compose';
@@ -8,14 +6,16 @@ import { withStyles } from 'material-ui/styles';
 import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
 import withRoot from 'docs/src/modules/components/withRoot';
+import AppFooter from 'docs/src/modules/components/AppFooter';
 import Link from 'docs/src/modules/components/Link';
+import MarkdownElement from 'docs/src/modules/components/MarkdownElement';
 
 const styles = theme => ({
   root: {
     flex: '1 0 100%',
   },
   hero: {
-    minHeight: '100vh', // Makes the hero full height until we get some more content.
+    minHeight: '95vh',
     flex: '0 0 auto',
     display: 'flex',
     justifyContent: 'center',
@@ -29,7 +29,7 @@ const styles = theme => ({
     paddingBottom: theme.spacing.unit * 8,
     [theme.breakpoints.up('sm')]: {
       paddingTop: theme.spacing.unit * 16,
-      paddingBottom: theme.spacing.unit * 16,
+      paddingBottom: theme.spacing.unit * 14,
     },
   },
   text: {
@@ -50,8 +50,17 @@ const styles = theme => ({
   logo: {
     margin: '20px 0',
     width: '100%',
-    height: '40vw',
-    maxHeight: 230,
+    height: '35vw',
+    maxHeight: 200,
+  },
+  backers: {
+    backgroundColor: theme.palette.background.paper,
+    padding: theme.spacing.unit * 2,
+    display: 'flex',
+    justifyContent: 'center',
+  },
+  backersBody: {
+    maxWidth: theme.spacing.unit * 90,
   },
 });
 
@@ -75,7 +84,7 @@ function PageHome(props) {
               {'Material-UI'}
             </Typography>
             <Typography type="headline" component="h2" color="inherit" className={classes.headline}>
-              {"React Components that Implement Google's Material Design."}
+              {"React components that implement Google's Material Design."}
             </Typography>
             <Button
               component={Link}
@@ -90,6 +99,38 @@ function PageHome(props) {
           </div>
         </div>
       </div>
+      <div className={classes.backers}>
+        <MarkdownElement
+          className={classes.backersBody}
+          text={`
+<h2 align="center">Supporting Material-UI</h2>
+
+Material-UI is an MIT-licensed open source project.
+It's an independent project with ongoing development made possible entirely
+thanks to the support of these awesome [backers](/discover-more/backers).
+
+<h3 align="center">Gold Sponsors</h3>
+
+Gold Sponsors are those who have pledged $500/month and more to Material-UI.
+
+#### via [Patreon](https://www.patreon.com/oliviertassinari)
+
+#### via [OpenCollective](https://opencollective.com/material-ui)
+
+<a href="https://opencollective.com/material-ui/tiers/gold-sponsors/0/website" target="_blank"><img src="https://opencollective.com/material-ui/tiers/gold-sponsors/0/avatar.svg"></a>
+<a href="https://opencollective.com/material-ui/tiers/gold-sponsors/1/website" target="_blank"><img src="https://opencollective.com/material-ui/tiers/gold-sponsors/1/avatar.svg"></a>
+<a href="https://opencollective.com/material-ui/tiers/gold-sponsors/2/website" target="_blank"><img src="https://opencollective.com/material-ui/tiers/gold-sponsors/2/avatar.svg"></a>
+<a href="https://opencollective.com/material-ui/tiers/gold-sponsors/3/website" target="_blank"><img src="https://opencollective.com/material-ui/tiers/gold-sponsors/3/avatar.svg"></a>
+<a href="https://opencollective.com/material-ui/tiers/gold-sponsors/4/website" target="_blank"><img src="https://opencollective.com/material-ui/tiers/gold-sponsors/4/avatar.svg"></a>
+<a href="https://opencollective.com/material-ui/tiers/gold-sponsors/5/website" target="_blank"><img src="https://opencollective.com/material-ui/tiers/gold-sponsors/5/avatar.svg"></a>
+<a href="https://opencollective.com/material-ui/tiers/gold-sponsors/6/website" target="_blank"><img src="https://opencollective.com/material-ui/tiers/gold-sponsors/6/avatar.svg"></a>
+<a href="https://opencollective.com/material-ui/tiers/gold-sponsors/7/website" target="_blank"><img src="https://opencollective.com/material-ui/tiers/gold-sponsors/7/avatar.svg"></a>
+<a href="https://opencollective.com/material-ui/tiers/gold-sponsors/8/website" target="_blank"><img src="https://opencollective.com/material-ui/tiers/gold-sponsors/8/avatar.svg"></a>
+<a href="https://opencollective.com/material-ui/tiers/gold-sponsors/9/website" target="_blank"><img src="https://opencollective.com/material-ui/tiers/gold-sponsors/9/avatar.svg"></a>
+        `}
+        />
+      </div>
+      <AppFooter />
     </div>
   );
 }

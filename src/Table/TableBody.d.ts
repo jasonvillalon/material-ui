@@ -1,7 +1,14 @@
 import * as React from 'react';
-import { StyledComponent } from '..';
+import { StandardProps } from '..';
 
-export interface TableBodyProps
-  extends React.HTMLAttributes<HTMLTableSectionElement> {}
+export interface TableBodyProps extends StandardProps<TableBodyBaseProps, TableBodyClassKey> {
+  component?: React.ReactType<TableBodyBaseProps>;
+}
 
-export default class TableBody extends StyledComponent<TableBodyProps> {}
+export type TableBodyBaseProps = React.HTMLAttributes<HTMLTableSectionElement>;
+
+export type TableBodyClassKey = 'root';
+
+declare const TableBody: React.ComponentType<TableBodyProps>;
+
+export default TableBody;

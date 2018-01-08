@@ -1,5 +1,3 @@
-// @flow weak
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
@@ -21,7 +19,7 @@ const styles = {
 };
 
 function ImageAvatars(props) {
-  const classes = props.classes;
+  const { classes } = props;
   return (
     <div className={classes.row}>
       <Avatar alt="Remy Sharp" src="/static/images/remy.jpg" className={classes.avatar} />

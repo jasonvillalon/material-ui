@@ -1,18 +1,41 @@
 import * as React from 'react';
-import { StyledComponent } from '..';
-import { ModalProps } from '../internal/Modal';
+import { StandardProps } from '..';
+import { ModalProps, ModalClassKey } from '../Modal';
+import { TransitionDuration, TransitionHandlers } from '../internal/transition';
 import { SlideProps } from '../transitions/Slide';
 import { Theme } from '../styles/createMuiTheme';
 
-export interface DrawerProps extends ModalProps {
+export interface DrawerProps
+  extends StandardProps<
+      ModalProps & Partial<TransitionHandlers>,
+      DrawerClassKey,
+      'open' | 'children'
+    > {
   anchor?: 'left' | 'top' | 'right' | 'bottom';
+  children?: React.ReactNode;
   elevation?: number;
-  enterTransitionDuration?: number;
-  leaveTransitionDuration?: number;
+  ModalProps?: Partial<ModalProps>;
   open?: boolean;
-  SlideProps?: SlideProps;
+  SlideProps?: Partial<SlideProps>;
   theme?: Theme;
-  type: 'permanent' | 'persistent' | 'temporary';
+  transitionDuration?: TransitionDuration;
+  type?: 'permanent' | 'persistent' | 'temporary';
 }
 
-export default class Drawer extends StyledComponent<DrawerProps> {}
+export type DrawerClassKey =
+  | ModalClassKey
+  | 'docked'
+  | 'paper'
+  | 'paperAnchorLeft'
+  | 'paperAnchorRight'
+  | 'paperAnchorTop'
+  | 'paperAnchorBottom'
+  | 'paperAnchorDockedLeft'
+  | 'paperAnchorDockedTop'
+  | 'paperAnchorDockedRight'
+  | 'paperAnchorDockedBottom'
+  | 'modal';
+
+declare const Drawer: React.ComponentType<DrawerProps>;
+
+export default Drawer;

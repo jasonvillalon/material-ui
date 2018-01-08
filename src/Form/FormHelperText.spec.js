@@ -1,5 +1,3 @@
-// @flow
-
 import React from 'react';
 import { assert } from 'chai';
 import { createShallow, getClasses } from '../test-utils';
@@ -34,7 +32,7 @@ describe('<FormHelperText />', () => {
 
     function setFormControlContext(muiFormControlContext) {
       muiFormControl = muiFormControlContext;
-      wrapper.setContext({ ...wrapper.context(), muiFormControl });
+      wrapper.setContext({ muiFormControl });
     }
 
     beforeEach(() => {

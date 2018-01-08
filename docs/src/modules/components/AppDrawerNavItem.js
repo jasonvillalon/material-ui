@@ -1,5 +1,3 @@
-// @flow
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import Link from 'docs/src/modules/components/Link';
@@ -36,15 +34,15 @@ const styles = theme => ({
   },
   navLinkButton: {
     color: theme.palette.text.secondary,
-    textIndent: theme.spacing.unit * 3,
-    fontSize: 13,
+    paddingLeft: theme.spacing.unit * 5,
+    fontSize: theme.typography.pxToRem(13),
   },
   activeButton: {
     color: theme.palette.text.primary,
   },
 });
 
-class AppDrawerNavItem extends React.Component<any, any> {
+class AppDrawerNavItem extends React.Component {
   static defaultProps = {
     openImmediately: false,
   };
@@ -95,7 +93,7 @@ class AppDrawerNavItem extends React.Component<any, any> {
         >
           {title}
         </Button>
-        <Collapse in={this.state.open} transitionDuration="auto" unmountOnExit>
+        <Collapse in={this.state.open} timeout="auto" unmountOnExit>
           {children}
         </Collapse>
       </ListItem>

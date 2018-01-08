@@ -1,14 +1,16 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-/* eslint-disable react/no-multi-comp */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import AppBar from 'material-ui/AppBar';
 import Tabs, { Tab } from 'material-ui/Tabs';
+import Typography from 'material-ui/Typography';
 
 function TabContainer(props) {
-  return <div style={{ padding: 20 }}>{props.children}</div>;
+  return (
+    <Typography component="div" style={{ padding: 8 * 3 }}>
+      {props.children}
+    </Typography>
+  );
 }
 
 TabContainer.propTypes = {
@@ -42,12 +44,12 @@ class BasicTabs extends React.Component {
           <Tabs value={value} onChange={this.handleChange}>
             <Tab label="Item One" />
             <Tab label="Item Two" />
-            <Tab label="Item Three" />
+            <Tab label="Item Three" href="#basic-tabs" />
           </Tabs>
         </AppBar>
-        {value === 0 && <TabContainer>{'Item One'}</TabContainer>}
-        {value === 1 && <TabContainer>{'Item Two'}</TabContainer>}
-        {value === 2 && <TabContainer>{'Item Three'}</TabContainer>}
+        {value === 0 && <TabContainer>Item One</TabContainer>}
+        {value === 1 && <TabContainer>Item Two</TabContainer>}
+        {value === 2 && <TabContainer>Item Three</TabContainer>}
       </div>
     );
   }

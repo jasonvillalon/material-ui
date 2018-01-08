@@ -1,5 +1,3 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-
 import React from 'react';
 import { findDOMNode } from 'react-dom';
 import PropTypes from 'prop-types';
@@ -10,6 +8,7 @@ import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
 import Popover from 'material-ui/Popover';
+import Input, { InputLabel } from 'material-ui/Input';
 
 const styles = theme => ({
   button: {
@@ -28,11 +27,20 @@ class AnchorPlayground extends React.Component {
     anchorOriginHorizontal: 'center',
     transformOriginVertical: 'top',
     transformOriginHorizontal: 'center',
+    positionTop: 200, // Just so the popover can be spotted more easily
+    positionLeft: 400, // Same as above
+    anchorReference: 'anchorEl',
   };
 
   handleChange = key => (event, value) => {
     this.setState({
       [key]: value,
+    });
+  };
+
+  handleNumberInputChange = key => event => {
+    this.setState({
+      [key]: parseInt(event.target.value, 10),
     });
   };
 
@@ -43,7 +51,7 @@ class AnchorPlayground extends React.Component {
     });
   };
 
-  handleRequestClose = () => {
+  handleClose = () => {
     this.setState({
       open: false,
     });
@@ -52,7 +60,7 @@ class AnchorPlayground extends React.Component {
   button = null;
 
   render() {
-    const classes = this.props.classes;
+    const { classes } = this.props;
     const {
       open,
       anchorEl,
@@ -60,6 +68,9 @@ class AnchorPlayground extends React.Component {
       anchorOriginHorizontal,
       transformOriginVertical,
       transformOriginHorizontal,
+      positionTop,
+      positionLeft,
+      anchorReference,
     } = this.state;
 
     return (
@@ -68,6 +79,7 @@ class AnchorPlayground extends React.Component {
           ref={node => {
             this.button = node;
           }}
+          raised
           className={classes.button}
           onClick={this.handleClickButton}
         >
@@ -76,7 +88,9 @@ class AnchorPlayground extends React.Component {
         <Popover
           open={open}
           anchorEl={anchorEl}
-          onRequestClose={this.handleRequestClose}
+          anchorReference={anchorReference}
+          anchorPosition={{ top: positionTop, left: positionLeft }}
+          onClose={this.handleClose}
           anchorOrigin={{
             vertical: anchorOriginVertical,
             horizontal: anchorOriginHorizontal,
@@ -89,6 +103,46 @@ class AnchorPlayground extends React.Component {
           <Typography className={classes.typography}>The content of the Popover.</Typography>
         </Popover>
         <Grid container>
+          <Grid item xs={12} sm={6}>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">anchorReference</FormLabel>
+              <RadioGroup
+                row
+                aria-label="anchorReference"
+                name="anchorReference"
+                value={this.state.anchorReference}
+                onChange={this.handleChange('anchorReference')}
+              >
+                <FormControlLabel value="anchorEl" control={<Radio />} label="anchorEl" />
+                <FormControlLabel
+                  value="anchorPosition"
+                  control={<Radio />}
+                  label="anchorPosition"
+                />
+              </RadioGroup>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <FormControl className={classes.formControl}>
+              <InputLabel htmlFor="position-top">anchorPosition.top</InputLabel>
+              <Input
+                id="position-top"
+                type="number"
+                value={this.state.positionTop}
+                onChange={this.handleNumberInputChange('positionTop')}
+              />
+            </FormControl>
+            &nbsp;
+            <FormControl className={classes.formControl}>
+              <InputLabel htmlFor="position-left">anchorPosition.left</InputLabel>
+              <Input
+                id="position-left"
+                type="number"
+                value={this.state.positionLeft}
+                onChange={this.handleNumberInputChange('positionLeft')}
+              />
+            </FormControl>
+          </Grid>
           <Grid item xs={12} sm={6}>
             <FormControl component="fieldset">
               <FormLabel component="legend">anchorOrigin.vertical</FormLabel>

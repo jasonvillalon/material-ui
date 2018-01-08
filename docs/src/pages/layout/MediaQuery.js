@@ -1,5 +1,3 @@
-// @flow weak
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import compose from 'recompose/compose';
@@ -13,14 +11,14 @@ const styles = theme => ({
     [theme.breakpoints.up('md')]: {
       backgroundColor: theme.palette.primary[500],
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('sm')]: {
       backgroundColor: theme.palette.secondary.A400,
     },
   },
 });
 
 function MediaQuery(props) {
-  const classes = props.classes;
+  const { classes } = props;
 
   return (
     <div className={classes.root}>

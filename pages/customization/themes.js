@@ -1,5 +1,3 @@
-// @flow
-
 import React from 'react';
 import withRoot from 'docs/src/modules/components/withRoot';
 import MarkdownDocs from 'docs/src/modules/components/MarkdownDocs';
@@ -24,6 +22,13 @@ module.exports = require('fs')
   .readFileSync(require.resolve('docs/src/pages/customization/TypographyTheme'), 'utf8')
 `,
         },
+        'pages/customization/FontSizeTheme.js': {
+          js: require('docs/src/pages/customization/FontSizeTheme').default,
+          raw: preval`
+module.exports = require('fs')
+  .readFileSync(require.resolve('docs/src/pages/customization/FontSizeTheme'), 'utf8')
+`,
+        },
         'pages/customization/DarkTheme.js': {
           js: require('docs/src/pages/customization/DarkTheme').default,
           raw: preval`
@@ -31,18 +36,11 @@ module.exports = require('fs')
   .readFileSync(require.resolve('docs/src/pages/customization/DarkTheme'), 'utf8')
 `,
         },
-        'pages/customization/ThemeDefault.js': {
-          js: require('docs/src/pages/customization/ThemeDefault').default,
+        'pages/customization/CustomStyles.js': {
+          js: require('docs/src/pages/customization/CustomStyles').default,
           raw: preval`
 module.exports = require('fs')
-  .readFileSync(require.resolve('docs/src/pages/customization/ThemeDefault'), 'utf8')
-`,
-        },
-        'pages/customization/BusinessVariables.js': {
-          js: require('docs/src/pages/customization/BusinessVariables').default,
-          raw: preval`
-module.exports = require('fs')
-  .readFileSync(require.resolve('docs/src/pages/customization/BusinessVariables'), 'utf8')
+  .readFileSync(require.resolve('docs/src/pages/customization/CustomStyles'), 'utf8')
 `,
         },
         'pages/customization/OverridesTheme.js': {

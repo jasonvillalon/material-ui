@@ -1,23 +1,22 @@
 export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-export type BreakpointMap = { [key in Breakpoint]: number };
+export type BreakpointValues = { [key in Breakpoint]: number };
 export const keys: Breakpoint[];
 
-export interface BreakpointsOptions {
-  breakpoints: BreakpointMap;
-  unit: string;
-  step: number;
-}
-
 export interface Breakpoints {
-  keys: typeof keys;
-  values: number[];
-  up: (key: Breakpoint) => string;
-  down: (key: Breakpoint) => string;
+  keys: Breakpoint[];
+  values: BreakpointValues;
+  up: (key: Breakpoint | number) => string;
+  down: (key: Breakpoint | number) => string;
   between: (start: Breakpoint, end: Breakpoint) => string;
   only: (key: Breakpoint) => string;
-  getWidth: (key: Breakpoint) => number;
+  width: (key: Breakpoint) => number;
 }
 
-export default function createBreakpoints(
-  options?: Partial<BreakpointsOptions>
-): Breakpoints;
+export type BreakpointsOptions = Partial<
+  {
+    unit: string;
+    step: number;
+  } & Breakpoints
+>;
+
+export default function createBreakpoints(options: BreakpointsOptions): Breakpoints;

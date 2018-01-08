@@ -1,6 +1,8 @@
 // @flow weak
 /* eslint-disable no-use-before-define */
 
+import warning from 'warning';
+
 /**
  * Returns a number whose value is limited to the given range.
  *
@@ -10,6 +12,11 @@
  * @returns {number} A number in the range [min, max]
  */
 function clamp(value, min, max) {
+  warning(
+    value >= min && value <= max,
+    `Material-UI: the value provided ${value} is out of range [${min}, ${max}].`,
+  );
+
   if (value < min) {
     return min;
   }
@@ -102,25 +109,23 @@ export function decomposeColor(color: string) {
 /**
  * Calculates the contrast ratio between two colors.
  *
- * Formula: http://www.w3.org/TR/2008/REC-WCAG20-20081211/#contrast-ratiodef
+ * Formula: https://www.w3.org/TR/WCAG20-TECHS/G17.html#G17-tests
  *
  * @param {string} foreground - CSS color, i.e. one of: #nnn, #nnnnnn, rgb(), rgba(), hsl(), hsla()
  * @param {string} background - CSS color, i.e. one of: #nnn, #nnnnnn, rgb(), rgba(), hsl(), hsla()
- * @returns {number} A contrast ratio value in the range 0 - 21 with 2 digit precision.
+ * @returns {number} A contrast ratio value in the range 0 - 21.
  */
 export function getContrastRatio(foreground: string, background: string) {
   const lumA = getLuminance(foreground);
   const lumB = getLuminance(background);
-  const contrastRatio = (Math.max(lumA, lumB) + 0.05) / (Math.min(lumA, lumB) + 0.05);
-
-  return Number(contrastRatio.toFixed(2)); // Truncate at two digits
+  return (Math.max(lumA, lumB) + 0.05) / (Math.min(lumA, lumB) + 0.05);
 }
 
 /**
  * The relative brightness of any point in a color space,
  * normalized to 0 for darkest black and 1 for lightest white.
  *
- * Formula: https://www.w3.org/WAI/GL/wiki/Relative_luminance
+ * Formula: https://www.w3.org/TR/WCAG20-TECHS/G17.html#G17-tests
  *
  * @param {string} color - CSS color, i.e. one of: #nnn, #nnnnnn, rgb(), rgba(), hsl(), hsla()
  * @returns {number} The relative brightness of the color in the range 0 - 1

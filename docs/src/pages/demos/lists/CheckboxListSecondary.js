@@ -1,5 +1,3 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -11,7 +9,7 @@ const styles = theme => ({
   root: {
     width: '100%',
     maxWidth: 360,
-    background: theme.palette.background.paper,
+    backgroundColor: theme.palette.background.paper,
   },
 });
 
@@ -20,7 +18,7 @@ class CheckboxListSecondary extends React.Component {
     checked: [1],
   };
 
-  handleToggle = (event, value) => {
+  handleToggle = value => () => {
     const { checked } = this.state;
     const currentIndex = checked.indexOf(value);
     const newChecked = [...checked];
@@ -37,18 +35,18 @@ class CheckboxListSecondary extends React.Component {
   };
 
   render() {
-    const classes = this.props.classes;
+    const { classes } = this.props;
 
     return (
       <div className={classes.root}>
         <List>
           {[0, 1, 2, 3].map(value => (
-            <ListItem dense button key={value}>
+            <ListItem key={value} dense button className={classes.listItem}>
               <Avatar alt="Remy Sharp" src="/static/images/remy.jpg" />
               <ListItemText primary={`Line item ${value + 1}`} />
               <ListItemSecondaryAction>
                 <Checkbox
-                  onClick={event => this.handleToggle(event, value)}
+                  onChange={this.handleToggle(value)}
                   checked={this.state.checked.indexOf(value) !== -1}
                 />
               </ListItemSecondaryAction>

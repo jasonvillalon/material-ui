@@ -1,20 +1,20 @@
-// @flow weak
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import withStyles from '../styles/withStyles';
 import { capitalizeFirstLetter } from '../utils/helpers';
 
-export const styles = (theme: Object) => ({
+export const styles = theme => ({
   root: {
     boxSizing: 'border-box',
     lineHeight: '48px',
-    paddingLeft: 16,
+    listStyle: 'none',
+    paddingLeft: theme.spacing.unit * 2,
+    paddingRight: theme.spacing.unit * 2,
     color: theme.palette.text.secondary,
     fontFamily: theme.typography.fontFamily,
     fontWeight: theme.typography.fontWeightMedium,
-    fontSize: theme.typography.fontSize,
+    fontSize: theme.typography.pxToRem(theme.typography.fontSize),
   },
   colorPrimary: {
     color: theme.palette.primary[500],
@@ -25,23 +25,39 @@ export const styles = (theme: Object) => ({
   inset: {
     paddingLeft: theme.spacing.unit * 9,
   },
+  sticky: {
+    position: 'sticky',
+    top: 0,
+    zIndex: 1,
+    backgroundColor: 'inherit',
+  },
 });
 
 function ListSubheader(props) {
-  const { classes, className: classNameProp, color, inset, children, ...other } = props;
+  const {
+    children,
+    classes,
+    className: classNameProp,
+    color,
+    component: ComponentProp,
+    disableSticky,
+    inset,
+    ...other
+  } = props;
   const className = classNames(
     classes.root,
     {
       [classes[`color${capitalizeFirstLetter(color)}`]]: color !== 'default',
       [classes.inset]: inset,
+      [classes.sticky]: !disableSticky,
     },
     classNameProp,
   );
 
   return (
-    <div className={className} {...other}>
+    <ComponentProp className={className} {...other}>
       {children}
-    </div>
+    </ComponentProp>
   );
 }
 
@@ -63,6 +79,15 @@ ListSubheader.propTypes = {
    */
   color: PropTypes.oneOf(['default', 'primary', 'inherit']),
   /**
+   * The component used for the root node.
+   * Either a string to use a DOM element or a component.
+   */
+  component: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
+  /**
+   * If `true`, the List Subheader will not stick to the top during scroll.
+   */
+  disableSticky: PropTypes.bool,
+  /**
    * If `true`, the List Subheader will be indented.
    */
   inset: PropTypes.bool,
@@ -70,6 +95,8 @@ ListSubheader.propTypes = {
 
 ListSubheader.defaultProps = {
   color: 'default',
+  component: 'li',
+  disableSticky: false,
   inset: false,
 };
 

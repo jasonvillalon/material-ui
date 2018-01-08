@@ -1,5 +1,3 @@
-// @flow weak
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import compose from 'recompose/compose';
@@ -36,7 +34,7 @@ const styles = theme => ({
 });
 
 function BreakpointUp(props) {
-  const classes = props.classes;
+  const { classes } = props;
 
   return (
     <div className={classes.container}>

@@ -1,10 +1,10 @@
 ---
-components: Table, TableBody, TableCell, TableHead, TableRow, TableSortLabel
+components: Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, TableSortLabel
 ---
 
 # Tables
 
-[Data tables](https://material.google.com/components/data-tables.html) display sets of raw data.
+[Data tables](https://material.io/guidelines/components/data-tables.html) display sets of raw data.
 They usually appear in desktop enterprise products.
 
 ## Structure
@@ -17,7 +17,7 @@ Checkboxes should accompany each row if the user needs to select or manipulate d
 
 A simple example with no frills.
 
-{{demo='pages/demos/tables/BasicTable.js'}}
+{{"demo": "pages/demos/tables/BasicTable.js"}}
 
 ## Sorting & Selecting
 
@@ -25,7 +25,7 @@ This example demonstrates the use `Checkbox` and clickable rows for selection wi
 
 It uses the `TableSortLabel` component to help style column headings.
 
-{{demo='pages/demos/tables/EnhancedTable.js'}}
+{{"demo": "pages/demos/tables/EnhancedTable.js"}}
 
 ## Advanced use cases
 

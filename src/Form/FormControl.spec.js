@@ -1,5 +1,3 @@
-// @flow
-
 import React from 'react';
 import { spy } from 'sinon';
 import { assert } from 'chai';
@@ -73,7 +71,7 @@ describe('<FormControl />', () => {
     });
   });
 
-  describe('should be dirty if has input with value set', () => {
+  describe('input', () => {
     it('should be dirty with a value', () => {
       const wrapper = shallow(
         <FormControl>
@@ -90,6 +88,24 @@ describe('<FormControl />', () => {
         </FormControl>,
       );
       assert.strictEqual(wrapper.state().dirty, true);
+    });
+
+    it('should be adorned with an endAdornment', () => {
+      const wrapper = shallow(
+        <FormControl>
+          <Input endAdornment={<div />} />
+        </FormControl>,
+      );
+      assert.strictEqual(wrapper.state().adornedStart, false);
+    });
+
+    it('should be adorned with a startAdornment', () => {
+      const wrapper = shallow(
+        <FormControl>
+          <Input startAdornment={<div />} />
+        </FormControl>,
+      );
+      assert.strictEqual(wrapper.state().adornedStart, true);
     });
   });
 
@@ -119,6 +135,13 @@ describe('<FormControl />', () => {
         wrapper.setState({ focused: true });
         loadChildContext();
         assert.strictEqual(muiFormControlContext.focused, true);
+      });
+
+      it('should have the adornedStart state from the instance', () => {
+        assert.strictEqual(muiFormControlContext.adornedStart, false);
+        wrapper.setState({ adornedStart: true });
+        loadChildContext();
+        assert.strictEqual(muiFormControlContext.adornedStart, true);
       });
     });
 
@@ -181,9 +204,7 @@ describe('<FormControl />', () => {
 
         it('should be able to use a onFocus property', () => {
           const handleFocus = spy();
-          wrapper.setProps({
-            onFocus: handleFocus,
-          });
+          wrapper.setProps({ onFocus: handleFocus });
           muiFormControlContext.onFocus();
           assert.strictEqual(handleFocus.callCount, 1);
         });
@@ -202,11 +223,9 @@ describe('<FormControl />', () => {
 
         it('should be able to use a onBlur property', () => {
           const handleBlur = spy();
-          wrapper.setProps({
-            onBlur: handleBlur,
-          });
+          wrapper.setProps({ onBlur: handleBlur });
           muiFormControlContext.onFocus();
-          muiFormControlContext.onBlur();
+          muiFormControlContext.onBlur({});
           assert.strictEqual(handleBlur.callCount, 1);
         });
       });

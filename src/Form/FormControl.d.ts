@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { StyledComponent, PropTypes } from '..';
+import { StandardProps, PropTypes } from '..';
 
 export interface FormControlProps
-  extends React.HtmlHTMLAttributes<HTMLDivElement> {
+  extends StandardProps<React.HtmlHTMLAttributes<HTMLDivElement>, FormControlClassKey> {
+  component?: React.ReactType<FormControlProps>;
   disabled?: boolean;
   error?: boolean;
   fullWidth?: boolean;
@@ -12,4 +13,8 @@ export interface FormControlProps
   required?: boolean;
 }
 
-export default class FormControl extends StyledComponent<FormControlProps> {}
+export type FormControlClassKey = 'root' | 'marginNormal' | 'marginDense' | 'fullWidth';
+
+declare const FormControl: React.ComponentType<FormControlProps>;
+
+export default FormControl;

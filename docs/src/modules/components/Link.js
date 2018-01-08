@@ -1,5 +1,3 @@
-// @flow
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
@@ -30,7 +28,7 @@ const styles = theme => ({
   },
 });
 
-class OnClick extends React.Component<any, any> {
+class OnClick extends React.Component {
   handleClick = event => {
     if (this.props.onClick) {
       this.props.onClick(event);
@@ -73,18 +71,18 @@ function Link(props, context) {
     classes[`variant${capitalizeFirstLetter(variant)}`],
     classNameProp,
   );
-  let rootProps;
+  let RootProps;
   let children = childrenProp;
 
   if (ComponentProp) {
     ComponentRoot = ComponentProp;
-    rootProps = {
+    RootProps = {
       ...other,
       className,
     };
   } else if (href) {
     ComponentRoot = NextLink;
-    rootProps = {
+    RootProps = {
       href,
       prefetch,
       passHref: true,
@@ -104,25 +102,18 @@ function Link(props, context) {
     );
   } else {
     ComponentRoot = 'a';
-    rootProps = {
+    RootProps = {
       ...other,
       className,
     };
   }
 
-  return <ComponentRoot {...rootProps}>{children}</ComponentRoot>;
+  return <ComponentRoot {...RootProps}>{children}</ComponentRoot>;
 }
 
-Link.propTypes = {
-  activeClassName: PropTypes.string,
-  children: PropTypes.node.isRequired,
-  classes: PropTypes.object.isRequired,
-  className: PropTypes.string,
-  component: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-  href: PropTypes.string,
-  onClick: PropTypes.func,
-  prefetch: PropTypes.bool,
-  variant: PropTypes.oneOf(['default', 'primary', 'accent', 'button']),
+Link.defaultProps = {
+  variant: 'default',
+  activeClassName: 'active',
 };
 
 Link.contextTypes = {
@@ -131,8 +122,16 @@ Link.contextTypes = {
   }).isRequired,
 };
 
-Link.defaultProps = {
-  variant: 'default',
+Link.propTypes = {
+  activeClassName: PropTypes.string,
+  children: PropTypes.node.isRequired,
+  classes: PropTypes.object.isRequired,
+  className: PropTypes.string,
+  component: PropTypes.any,
+  href: PropTypes.string,
+  onClick: PropTypes.func,
+  prefetch: PropTypes.bool,
+  variant: PropTypes.oneOf(['default', 'primary', 'accent', 'button']),
 };
 
 export default withStyles(styles)(Link);

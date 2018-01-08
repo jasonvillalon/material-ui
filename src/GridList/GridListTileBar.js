@@ -1,11 +1,9 @@
-// @flow weak
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import withStyles from '../styles/withStyles';
 
-export const styles = (theme: Object) => ({
+export const styles = theme => ({
   root: {
     position: 'absolute',
     left: 0,
@@ -39,14 +37,14 @@ export const styles = (theme: Object) => ({
     marginRight: 0,
   },
   title: {
-    fontSize: 16,
+    fontSize: theme.typography.pxToRem(16),
     lineHeight: '24px',
     textOverflow: 'ellipsis',
     overflow: 'hidden',
     whiteSpace: 'nowrap',
   },
   subtitle: {
-    fontSize: 12,
+    fontSize: theme.typography.pxToRem(12),
     lineHeight: 1,
     textOverflow: 'ellipsis',
     overflow: 'hidden',
@@ -112,7 +110,7 @@ GridListTileBar.propTypes = {
    * An IconButton element to be used as secondary action target
    * (primary action target is the tile itself).
    */
-  actionIcon: PropTypes.element,
+  actionIcon: PropTypes.node,
   /**
    * Position of secondary action IconButton.
    */
@@ -132,7 +130,7 @@ GridListTileBar.propTypes = {
   /**
    * Title to be displayed on tile.
    */
-  title: PropTypes.node.isRequired,
+  title: PropTypes.node,
   /**
    * Position of the title bar.
    */
@@ -140,8 +138,8 @@ GridListTileBar.propTypes = {
 };
 
 GridListTileBar.defaultProps = {
-  titlePosition: 'bottom',
   actionPosition: 'right',
+  titlePosition: 'bottom',
 };
 
 export default withStyles(styles, { name: 'MuiGridListTileBar' })(GridListTileBar);

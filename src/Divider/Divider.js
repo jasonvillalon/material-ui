@@ -1,15 +1,14 @@
-// @flow weak
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import withStyles from '../styles/withStyles';
 
-export const styles = (theme: Object) => ({
+export const styles = theme => ({
   root: {
     height: 1,
     margin: 0, // Reset browser default style.
     border: 'none',
+    flexShrink: 0,
   },
   default: {
     backgroundColor: theme.palette.text.divider,

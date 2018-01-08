@@ -1,16 +1,18 @@
 import * as React from 'react';
-import { StyledComponent } from '..';
-import { PopoverProps } from '../Popover';
-import { TransitionHandlers } from '../internal/Transition';
+import { PopoverProps, PopoverClassKey } from '../Popover';
+import { TransitionDuration, TransitionHandlers } from '../internal/transition';
 import { MenuListProps } from './MenuList';
+import { StandardProps } from '..';
 
-export type MenuProps = {
+export interface MenuProps
+  extends StandardProps<PopoverProps & Partial<TransitionHandlers>, MenuClassKey> {
   anchorEl?: HTMLElement;
   MenuListProps?: MenuListProps;
-  onRequestClose?: React.EventHandler<any>;
-  open?: boolean;
-  transitionDuration?: number | 'auto';
-} & Partial<TransitionHandlers> &
-  PopoverProps;
+  transitionDuration?: TransitionDuration;
+}
 
-export default class Menu extends StyledComponent<MenuProps> {}
+export type MenuClassKey = PopoverClassKey | 'root';
+
+declare const Menu: React.ComponentType<MenuProps>;
+
+export default Menu;

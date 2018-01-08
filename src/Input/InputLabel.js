@@ -1,13 +1,10 @@
-// @flow
-
 import React from 'react';
-import type { Node } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import withStyles from '../styles/withStyles';
 import { FormLabel } from '../Form';
 
-export const styles = (theme: Object) => ({
+export const styles = theme => ({
   root: {
     transformOrigin: 'top left',
   },
@@ -18,8 +15,8 @@ export const styles = (theme: Object) => ({
     // slight alteration to spec spacing to match visual spec result
     transform: `translate(0, ${theme.spacing.unit * 3 - 1}px) scale(1)`,
   },
-  // Compensation for the `Input.inputDense` style.
   labelDense: {
+    // Compensation for the `Input.inputDense` style.
     transform: `translate(0, ${theme.spacing.unit * 2.5 + 1}px) scale(1)`,
   },
   shrink: {
@@ -37,67 +34,16 @@ export const styles = (theme: Object) => ({
   },
 });
 
-type DefaultProps = {
-  classes: Object,
-  disabled: boolean,
-  disableAnimation: boolean,
-};
-
-export type Props = {
-  /**
-   * The contents of the `InputLabel`.
-   */
-  children?: Node,
-  /**
-   * Useful to extend the style applied to components.
-   */
-  classes?: Object,
-  /**
-   * @ignore
-   */
-  className?: string,
-  /**
-   * If `true`, the transition animation is disabled.
-   */
-  disableAnimation?: boolean,
-  /**
-   * If `true`, apply disabled class.
-   */
-  disabled?: boolean,
-  /**
-   * If `true`, the label will be displayed in an error state.
-   */
-  error?: boolean,
-  /**
-   * If `true`, the input of this label is focused.
-   */
-  focused?: boolean,
-  /**
-   * If `dense`, will adjust vertical spacing. This is normally obtained via context from
-   * FormControl.
-   */
-  margin?: 'dense',
-  /**
-   * if `true`, the label will indicate that the input is required.
-   */
-  required?: boolean,
-  /**
-   * If `true`, the label is shrunk.
-   */
-  shrink?: boolean,
-};
-
-type AllProps = DefaultProps & Props;
-
-function InputLabel(props: AllProps, context: { muiFormControl: Object }) {
+function InputLabel(props, context) {
   const {
-    disabled,
-    disableAnimation,
     children,
     classes,
     className: classNameProp,
-    shrink: shrinkProp,
+    disableAnimation,
+    disabled,
+    FormControlClasses,
     margin: marginProp,
+    shrink: shrinkProp,
     ...other
   } = props;
 
@@ -105,7 +51,7 @@ function InputLabel(props: AllProps, context: { muiFormControl: Object }) {
   let shrink = shrinkProp;
 
   if (typeof shrink === 'undefined' && muiFormControl) {
-    shrink = muiFormControl.dirty || muiFormControl.focused;
+    shrink = muiFormControl.dirty || muiFormControl.focused || muiFormControl.adornedStart;
   }
 
   let margin = marginProp;
@@ -126,11 +72,59 @@ function InputLabel(props: AllProps, context: { muiFormControl: Object }) {
   );
 
   return (
-    <FormLabel className={className} {...other}>
+    <FormLabel data-shrink={shrink} className={className} classes={FormControlClasses} {...other}>
       {children}
     </FormLabel>
   );
 }
+
+InputLabel.propTypes = {
+  /**
+   * The contents of the `InputLabel`.
+   */
+  children: PropTypes.node,
+  /**
+   * Useful to extend the style applied to components.
+   */
+  classes: PropTypes.object.isRequired,
+  /**
+   * @ignore
+   */
+  className: PropTypes.string,
+  /**
+   * If `true`, the transition animation is disabled.
+   */
+  disableAnimation: PropTypes.bool,
+  /**
+   * If `true`, apply disabled class.
+   */
+  disabled: PropTypes.bool,
+  /**
+   * If `true`, the label will be displayed in an error state.
+   */
+  error: PropTypes.bool,
+  /**
+   * If `true`, the input of this label is focused.
+   */
+  focused: PropTypes.bool,
+  /**
+   * `classes` property applied to the `FormControl` element.
+   */
+  FormControlClasses: PropTypes.object,
+  /**
+   * If `dense`, will adjust vertical spacing. This is normally obtained via context from
+   * FormControl.
+   */
+  margin: PropTypes.oneOf(['dense']),
+  /**
+   * if `true`, the label will indicate that the input is required.
+   */
+  required: PropTypes.bool,
+  /**
+   * If `true`, the label is shrunk.
+   */
+  shrink: PropTypes.bool,
+};
 
 InputLabel.defaultProps = {
   disabled: false,

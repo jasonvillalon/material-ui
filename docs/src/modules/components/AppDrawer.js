@@ -1,6 +1,5 @@
-// @flow
-
 import React from 'react';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import List from 'material-ui/List';
@@ -72,7 +71,7 @@ function reduceChildRoutes(props, activePage, items, childPage, index) {
         key={index}
         title={pageToTitle(childPage)}
         href={childPage.pathname}
-        onClick={props.onRequestClose}
+        onClick={props.onClose}
       />,
     );
   }
@@ -80,16 +79,16 @@ function reduceChildRoutes(props, activePage, items, childPage, index) {
   return items;
 }
 
-const GITHUB_RELEASE_BASE_URL = 'https://github.com/callemall/material-ui/releases/tag/';
+const GITHUB_RELEASE_BASE_URL = 'https://github.com/mui-org/material-ui/releases/tag/';
 
 function AppDrawer(props, context) {
-  const { classes, className, disablePermanent, mobileOpen, onRequestClose } = props;
+  const { classes, className, disablePermanent, mobileOpen, onClose } = props;
 
   const drawer = (
     <div className={classes.nav}>
       <div className={classes.toolbarIe11}>
         <Toolbar className={classes.toolbar}>
-          <Link className={classes.title} href="/" onClick={onRequestClose}>
+          <Link className={classes.title} href="/" onClick={onClose}>
             <Typography type="title" gutterBottom color="inherit">
               Material-UI
             </Typography>
@@ -114,11 +113,11 @@ function AppDrawer(props, context) {
       <Hidden lgUp={!disablePermanent}>
         <Drawer
           classes={{
-            paper: classes.paper,
+            paper: classNames(classes.paper, 'algolia-drawer'),
           }}
           type="temporary"
           open={mobileOpen}
-          onRequestClose={onRequestClose}
+          onClose={onClose}
           ModalProps={{
             keepMounted: true,
           }}
@@ -127,7 +126,7 @@ function AppDrawer(props, context) {
         </Drawer>
       </Hidden>
       {disablePermanent ? null : (
-        <Hidden lgDown implementation="css">
+        <Hidden mdDown implementation="css">
           <Drawer
             classes={{
               paper: classes.paper,
@@ -148,12 +147,12 @@ AppDrawer.propTypes = {
   className: PropTypes.string,
   disablePermanent: PropTypes.bool.isRequired,
   mobileOpen: PropTypes.bool.isRequired,
-  onRequestClose: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 AppDrawer.contextTypes = {
+  activePage: PropTypes.object.isRequired,
   pages: PropTypes.array.isRequired,
-  activePage: PropTypes.object,
 };
 
 export default withStyles(styles)(AppDrawer);

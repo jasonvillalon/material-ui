@@ -1,6 +1,5 @@
-// @flow weak
-
 import React from 'react';
+import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import TransitionGroup from 'react-transition-group/TransitionGroup';
 import classNames from 'classnames';
@@ -8,8 +7,9 @@ import withStyles from '../styles/withStyles';
 import Ripple from './Ripple';
 
 const DURATION = 550;
+export const DELAY_RIPPLE = 80;
 
-export const styles = (theme: Object) => ({
+export const styles = theme => ({
   root: {
     display: 'block',
     position: 'absolute',
@@ -88,53 +88,37 @@ export const styles = (theme: Object) => ({
   },
 });
 
-type DefaultProps = {
-  classes: Object,
-};
-
-export type Props = {
-  /**
-   * If `true`, the ripple starts at the center of the component
-   * rather than at the point of interaction.
-   */
-  center?: boolean,
-  /**
-   * Useful to extend the style applied to components.
-   */
-  classes?: Object,
-  /**
-   * @ignore
-   */
-  className?: string,
-};
-
-type AllProps = DefaultProps & Props;
-
-type State = { nextKey: number, ripples: Array<*> };
-
 /**
  * @ignore - internal component.
  */
-class TouchRipple extends React.Component<AllProps, State> {
-  props: AllProps;
-  static defaultProps = {
-    center: false,
-  };
-
+class TouchRipple extends React.Component {
   state = {
     nextKey: 0,
     ripples: [],
   };
 
+  componentWillUnmount() {
+    clearTimeout(this.startTimer);
+  }
+
   // Used to filter out mouse emulated events on mobile.
   ignoringMouseDown = false;
+  // We use a timer in order to only show the ripples for touch "click" like events.
+  // We don't want to display the ripple for touch scroll events.
+  startTimer = null;
+  // This is the hook called once the previous timeout is ready.
+  startTimerCommit = null;
 
   pulsate = () => {
     this.start({}, { pulsate: true });
   };
 
   start = (event = {}, options = {}, cb) => {
-    const { pulsate = false, center = this.props.center || options.pulsate } = options;
+    const {
+      pulsate = false,
+      center = this.props.center || options.pulsate,
+      fakeElement = false, // For test purposes
+    } = options;
 
     if (event.type === 'mousedown' && this.ignoringMouseDown) {
       this.ignoringMouseDown = false;
@@ -145,12 +129,9 @@ class TouchRipple extends React.Component<AllProps, State> {
       this.ignoringMouseDown = true;
     }
 
-    let ripples = this.state.ripples;
-
-    const element = ReactDOM.findDOMNode(this);
+    const element = fakeElement ? null : ReactDOM.findDOMNode(this);
     const rect = element
-      ? // $FlowFixMe
-        element.getBoundingClientRect()
+      ? element.getBoundingClientRect()
       : {
           width: 0,
           height: 0,
@@ -186,25 +167,33 @@ class TouchRipple extends React.Component<AllProps, State> {
       }
     } else {
       const sizeX =
-        Math.max(
-          // $FlowFixMe
-          Math.abs((element ? element.clientWidth : 0) - rippleX),
-          rippleX,
-        ) *
-          2 +
-        2;
+        Math.max(Math.abs((element ? element.clientWidth : 0) - rippleX), rippleX) * 2 + 2;
       const sizeY =
-        Math.max(
-          // $FlowFixMe
-          Math.abs((element ? element.clientHeight : 0) - rippleY),
-          rippleY,
-        ) *
-          2 +
-        2;
+        Math.max(Math.abs((element ? element.clientHeight : 0) - rippleY), rippleY) * 2 + 2;
       rippleSize = Math.sqrt(Math.pow(sizeX, 2) + Math.pow(sizeY, 2));
     }
 
-    // Add a ripple to the ripples array
+    // Touche devices
+    if (event.touches) {
+      // Prepare the ripple effect.
+      this.startTimerCommit = () => {
+        this.startCommit({ pulsate, rippleX, rippleY, rippleSize, cb });
+      };
+      // Deplay the execution of the ripple effect.
+      this.startTimer = setTimeout(() => {
+        this.startTimerCommit();
+        this.startTimerCommit = null;
+      }, DELAY_RIPPLE); // We have to make a tradeoff with this value.
+    } else {
+      this.startCommit({ pulsate, rippleX, rippleY, rippleSize, cb });
+    }
+  };
+
+  startCommit = params => {
+    const { pulsate, rippleX, rippleY, rippleSize, cb } = params;
+    let ripples = this.state.ripples;
+
+    // Add a ripple to the ripples array.
     ripples = [
       ...ripples,
       <Ripple
@@ -231,7 +220,23 @@ class TouchRipple extends React.Component<AllProps, State> {
   };
 
   stop = (event, cb) => {
+    clearTimeout(this.startTimer);
     const { ripples } = this.state;
+
+    // The touch interaction occures to quickly.
+    // We still want to show ripple effect.
+    if (event.type === 'touchend' && this.startTimerCommit) {
+      event.persist();
+      this.startTimerCommit();
+      this.startTimerCommit = null;
+      this.startTimer = setTimeout(() => {
+        this.stop(event, cb);
+      }, 0);
+      return;
+    }
+
+    this.startTimerCommit = null;
+
     if (ripples && ripples.length) {
       this.setState(
         {
@@ -259,4 +264,24 @@ class TouchRipple extends React.Component<AllProps, State> {
   }
 }
 
-export default withStyles(styles, { name: 'MuiTouchRipple' })(TouchRipple);
+TouchRipple.propTypes = {
+  /**
+   * If `true`, the ripple starts at the center of the component
+   * rather than at the point of interaction.
+   */
+  center: PropTypes.bool,
+  /**
+   * Useful to extend the style applied to components.
+   */
+  classes: PropTypes.object.isRequired,
+  /**
+   * @ignore
+   */
+  className: PropTypes.string,
+};
+
+TouchRipple.defaultProps = {
+  center: false,
+};
+
+export default withStyles(styles, { flip: false, name: 'MuiTouchRipple' })(TouchRipple);

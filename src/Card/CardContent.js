@@ -1,10 +1,9 @@
-// @flow
-
 import React from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import withStyles from '../styles/withStyles';
 
-export const styles = (theme: Object) => ({
+export const styles = theme => ({
   root: {
     padding: theme.spacing.unit * 2,
     '&:last-child': {
@@ -13,27 +12,21 @@ export const styles = (theme: Object) => ({
   },
 });
 
-type DefaultProps = {
-  classes: Object,
-};
-
-export type Props = {
-  /**
-   * Useful to extend the style applied to components.
-   */
-  classes?: Object,
-  /**
-   * @ignore
-   */
-  className?: string,
-};
-
-type AllProps = DefaultProps & Props;
-
-function CardContent(props: AllProps) {
+function CardContent(props) {
   const { classes, className, ...other } = props;
 
   return <div className={classNames(classes.root, className)} {...other} />;
 }
+
+CardContent.propTypes = {
+  /**
+   * Useful to extend the style applied to components.
+   */
+  classes: PropTypes.object.isRequired,
+  /**
+   * @ignore
+   */
+  className: PropTypes.string,
+};
 
 export default withStyles(styles, { name: 'MuiCardContent' })(CardContent);

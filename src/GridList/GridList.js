@@ -1,5 +1,3 @@
-// @flow weak
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
@@ -12,18 +10,19 @@ export const styles = {
     overflowY: 'auto',
     listStyle: 'none',
     padding: 0,
+    WebkitOverflowScrolling: 'touch', // Add iOS momentum scrolling.
   },
 };
 
 function GridList(props) {
   const {
-    cols,
-    spacing,
     cellHeight,
     children,
     classes,
     className: classNameProp,
+    cols,
     component: ComponentProp,
+    spacing,
     style,
     ...other
   } = props;
@@ -78,7 +77,6 @@ GridList.propTypes = {
   /**
    * The component used for the root node.
    * Either a string to use a DOM element or a component.
-   * By default we map the type to a good default headline component.
    */
   component: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   /**
@@ -92,10 +90,10 @@ GridList.propTypes = {
 };
 
 GridList.defaultProps = {
-  cols: 2,
-  spacing: 4,
   cellHeight: 180,
+  cols: 2,
   component: 'ul',
+  spacing: 4,
 };
 
 export default withStyles(styles, { name: 'MuiGridList' })(GridList);

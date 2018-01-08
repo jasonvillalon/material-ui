@@ -1,16 +1,15 @@
-// @flow weak
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import withStyles from '../styles/withStyles';
 import { capitalizeFirstLetter } from '../utils/helpers';
 
-export const styles = (theme: Object) => ({
+export const styles = theme => ({
   root: {
-    position: 'relative',
+    position: 'absolute',
     height: 2,
-    marginTop: -2,
+    bottom: 0,
+    width: '100%',
     transition: theme.transitions.create(),
     willChange: 'left, width',
   },
@@ -59,15 +58,12 @@ TabIndicator.propTypes = {
    * @ignore
    * The color of the tab indicator.
    */
-  color: PropTypes.oneOfType([PropTypes.oneOf(['accent', 'primary']), PropTypes.string]).isRequired,
+  color: PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf(['accent', 'primary'])]),
   /**
    * @ignore
    * The style of the root element.
    */
-  style: PropTypes.shape({
-    left: PropTypes.number,
-    width: PropTypes.number,
-  }).isRequired,
+  style: PropTypes.object,
 };
 
 export default withStyles(styles, { name: 'MuiTabIndicator' })(TabIndicator);

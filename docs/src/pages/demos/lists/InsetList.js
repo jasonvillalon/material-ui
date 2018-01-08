@@ -1,5 +1,3 @@
-// @flow weak
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -10,12 +8,12 @@ const styles = theme => ({
   root: {
     width: '100%',
     maxWidth: 360,
-    background: theme.palette.background.paper,
+    backgroundColor: theme.palette.background.paper,
   },
 });
 
 function InsetList(props) {
-  const classes = props.classes;
+  const { classes } = props;
   return (
     <List className={classes.root}>
       <ListItem button>

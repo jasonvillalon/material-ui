@@ -1,30 +1,41 @@
 import * as React from 'react';
-import { StyledComponent } from '..';
+import { StandardProps } from '..';
 import { PaperProps } from '../Paper';
-import { TransitionHandlers } from '../internal/Transition';
+import { TransitionDuration, TransitionHandlers } from '../internal/transition';
+import { ModalProps, ModalClassKey } from '../Modal';
 
-export type Origin = {
+export interface PopoverOrigin {
   horizontal: 'left' | 'center' | 'right' | number;
   vertical: 'top' | 'center' | 'bottom' | number;
-};
+}
 
-export type PopoverProps = {
-  anchorEl?: Object;
-  anchorOrigin?: Origin;
+export interface PopoverPosition {
+  top: number;
+  left: number;
+}
+
+export type PopoverReference = 'anchorEl' | 'anchorPosition';
+
+export interface PopoverProps
+  extends StandardProps<ModalProps & Partial<TransitionHandlers>, PopoverClassKey, 'children'> {
+  anchorEl?: HTMLElement;
+  anchorOrigin?: PopoverOrigin;
+  anchorPosition?: PopoverPosition;
+  anchorReference?: PopoverReference;
+  children?: React.ReactNode;
   elevation?: number;
-  enteredClassName?: string;
-  enteringClassName?: string;
-  exitedClassName?: string;
-  exitingClassName?: string;
-  getContentAnchorEl?: Function;
+  getContentAnchorEl?: (element: HTMLElement) => HTMLElement;
+  marginThreshold?: number;
   modal?: boolean;
-  onRequestClose?: Function;
-  open?: boolean;
+  PaperProps?: Partial<PaperProps>;
   role?: string;
-  transformOrigin?: Origin;
-  transitionDuration?: number | 'auto';
-  theme?: Object;
-} & Partial<TransitionHandlers> &
-  PaperProps;
+  transformOrigin?: PopoverOrigin;
+  transition?: React.ReactType;
+  transitionDuration?: TransitionDuration;
+}
 
-export default class Popover extends StyledComponent<PopoverProps> {}
+export type PopoverClassKey = ModalClassKey | 'paper';
+
+declare const Popover: React.ComponentType<PopoverProps>;
+
+export default Popover;

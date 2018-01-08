@@ -1,11 +1,18 @@
 import * as React from 'react';
-import { StyledComponent, Omit } from '..';
+import { StandardProps } from '..';
 import { CardContentProps } from './CardContent';
 
-export type CardHeaderProps = {
+export interface CardHeaderProps
+  extends StandardProps<React.HTMLAttributes<HTMLDivElement>, CardHeaderClassKey, 'title'> {
+  action?: React.ReactNode;
   avatar?: React.ReactNode;
+  component?: React.ReactType<CardHeaderProps>;
   subheader?: React.ReactNode;
   title?: React.ReactNode;
-} & Partial<Omit<CardContentProps, 'title'>>;
+}
 
-export default class CardHeader extends StyledComponent<CardHeaderProps> {}
+export type CardHeaderClassKey = 'root' | 'avatar' | 'content' | 'title' | 'subheader';
+
+declare const CardHeader: React.ComponentType<CardHeaderProps>;
+
+export default CardHeader;

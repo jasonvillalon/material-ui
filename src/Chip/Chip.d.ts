@@ -1,12 +1,24 @@
 import * as React from 'react';
-import { StyledComponent } from '..';
+import { StandardProps } from '..';
 
-export interface ChipProps extends React.HTMLAttributes<HTMLDivElement> {
-  avatar?: React.ReactNode;
+export interface ChipProps
+  extends StandardProps<React.HTMLAttributes<HTMLDivElement>, ChipClassKey> {
+  avatar?: React.ReactElement<any>;
+  deleteIcon?: React.ReactElement<any>;
   label?: React.ReactNode;
+  onDelete?: React.EventHandler<any>;
   onKeyDown?: React.EventHandler<React.KeyboardEvent<any>>;
-  onRequestDelete?: React.EventHandler<any>;
-  tabIndex?: number;
 }
 
-export default class Chip extends StyledComponent<ChipProps> {}
+export type ChipClassKey =
+  | 'root'
+  | 'clickable'
+  | 'deletable'
+  | 'avatar'
+  | 'avatarChildren'
+  | 'label'
+  | 'deleteIcon';
+
+declare const Chip: React.ComponentType<ChipProps>;
+
+export default Chip;

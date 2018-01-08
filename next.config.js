@@ -1,11 +1,10 @@
 const webpack = require('webpack');
-const path = require('path');
 const pkg = require('./package.json');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const { findPages } = require('./docs/src/modules/utils/find');
 
 const ENABLE_STATS = false;
-process.env.MATERIAL_UI_VERSION = pkg.version,
+process.env.MATERIAL_UI_VERSION = pkg.version;
 
 module.exports = {
   webpack: config => {
@@ -72,5 +71,11 @@ module.exports = {
     })
 
     return map;
+  },
+  onDemandEntries: {
+    // Period (in ms) where the server will keep pages in the buffer
+    maxInactiveAge: 120 * 1e3, // default 25s
+    // Number of pages that should be kept simultaneously without being disposed
+    pagesBufferLength: 3, // default 2
   },
 };

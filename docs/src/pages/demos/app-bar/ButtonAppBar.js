@@ -1,5 +1,3 @@
-// @flow weak
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -12,24 +10,23 @@ import MenuIcon from 'material-ui-icons/Menu';
 
 const styles = {
   root: {
-    marginTop: 30,
     width: '100%',
   },
   flex: {
     flex: 1,
   },
   menuButton: {
-    marginLeft: 12,
+    marginLeft: -12,
     marginRight: 20,
   },
 };
 
 function ButtonAppBar(props) {
-  const classes = props.classes;
+  const { classes } = props;
   return (
     <div className={classes.root}>
       <AppBar position="static">
-        <Toolbar disableGutters>
+        <Toolbar>
           <IconButton className={classes.menuButton} color="contrast" aria-label="Menu">
             <MenuIcon />
           </IconButton>

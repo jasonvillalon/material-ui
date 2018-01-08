@@ -1,5 +1,3 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-
 import React from 'react';
 import Button from 'material-ui/Button';
 import Snackbar from 'material-ui/Snackbar';
@@ -15,7 +13,7 @@ class PositionedSnackbar extends React.Component {
     this.setState({ open: true, ...state });
   };
 
-  handleRequestClose = () => {
+  handleClose = () => {
     this.setState({ open: false });
   };
 
@@ -44,7 +42,7 @@ class PositionedSnackbar extends React.Component {
         <Snackbar
           anchorOrigin={{ vertical, horizontal }}
           open={open}
-          onRequestClose={this.handleRequestClose}
+          onClose={this.handleClose}
           SnackbarContentProps={{
             'aria-describedby': 'message-id',
           }}

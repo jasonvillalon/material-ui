@@ -1,5 +1,3 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -10,11 +8,12 @@ const styles = theme => ({
   root: {
     width: '100%',
     maxWidth: 360,
-    background: theme.palette.background.paper,
+    backgroundColor: theme.palette.background.paper,
   },
 });
 
 const options = [
+  'Show some love to Material-UI',
   'Show all notification content',
   'Hide sensitive notification content',
   'Hide all notification content',
@@ -22,27 +21,28 @@ const options = [
 
 class SimpleListMenu extends React.Component {
   state = {
-    anchorEl: undefined,
-    open: false,
+    anchorEl: null,
     selectedIndex: 1,
   };
 
   button = undefined;
 
   handleClickListItem = event => {
-    this.setState({ open: true, anchorEl: event.currentTarget });
+    this.setState({ anchorEl: event.currentTarget });
   };
 
   handleMenuItemClick = (event, index) => {
-    this.setState({ selectedIndex: index, open: false });
+    this.setState({ selectedIndex: index, anchorEl: null });
   };
 
-  handleRequestClose = () => {
-    this.setState({ open: false });
+  handleClose = () => {
+    this.setState({ anchorEl: null });
   };
 
   render() {
-    const classes = this.props.classes;
+    const { classes } = this.props;
+    const { anchorEl } = this.state;
+
     return (
       <div className={classes.root}>
         <List>
@@ -61,13 +61,14 @@ class SimpleListMenu extends React.Component {
         </List>
         <Menu
           id="lock-menu"
-          anchorEl={this.state.anchorEl}
-          open={this.state.open}
-          onRequestClose={this.handleRequestClose}
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={this.handleClose}
         >
           {options.map((option, index) => (
             <MenuItem
               key={option}
+              disabled={index === 0}
               selected={index === this.state.selectedIndex}
               onClick={event => this.handleMenuItemClick(event, index)}
             >

@@ -1,30 +1,39 @@
-import { Breakpoints } from './createBreakpoints';
-import { Mixins } from './createMixins';
-import { Palette } from './createPalette';
+import { Breakpoints, BreakpointsOptions } from './createBreakpoints';
+import { Mixins, MixinsOptions } from './createMixins';
+import { Palette, PaletteOptions } from './createPalette';
 import { Shadows } from './shadows';
-import { Spacing } from './spacing';
-import { Transitions } from './transitions';
-import { Typography } from './createTypography';
-import { ZIndex } from './zIndex';
+import { Spacing, SpacingOptions } from './spacing';
+import { Transitions, TransitionsOptions } from './transitions';
+import { Typography, TypographyOptions } from './createTypography';
+import { ZIndex, ZIndexOptions } from './zIndex';
+import { Overrides } from './overrides';
+
+export type Direction = 'ltr' | 'rtl';
 
 export interface ThemeOptions {
-  breakpoints: Breakpoints;
-  mixins: Mixins;
-  palette: Palette;
-  typography: Typography;
+  direction?: Direction;
+  palette?: PaletteOptions;
+  typography?: TypographyOptions | ((palette: Palette) => TypographyOptions);
+  mixins?: MixinsOptions;
+  breakpoints?: BreakpointsOptions;
+  shadows?: Shadows;
+  transitions?: TransitionsOptions;
+  spacing?: SpacingOptions;
+  zIndex?: ZIndexOptions;
+  overrides?: Overrides;
 }
 
-export type Theme<T = {}> = {
-  direction: 'ltr';
+export interface Theme {
+  direction: Direction;
+  palette: Palette;
+  typography: Typography;
+  mixins: Mixins;
+  breakpoints: Breakpoints;
   shadows: Shadows;
-  spacing: Spacing;
   transitions: Transitions;
+  spacing: Spacing;
   zIndex: ZIndex;
-} & ThemeOptions &
-  T;
+  overrides?: Overrides;
+}
 
-export default function createMuiTheme<T = {}>(
-  options?: {
-    [K in keyof ThemeOptions]?: Partial<ThemeOptions[K]>
-  } & T
-): Theme<T>;
+export default function createMuiTheme(options?: ThemeOptions): Theme;

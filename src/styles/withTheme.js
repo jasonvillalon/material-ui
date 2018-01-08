@@ -1,8 +1,5 @@
-// @flow weak
-
 import React from 'react';
-import type { ComponentType } from 'react';
-import createEagerFactory from 'recompose/createEagerFactory';
+import hoistNonReactStatics from 'hoist-non-react-statics';
 import wrapDisplayName from 'recompose/wrapDisplayName';
 import createMuiTheme from './createMuiTheme';
 import themeListener from './themeListener';
@@ -19,19 +16,12 @@ function getDefaultTheme() {
 }
 
 // Provide the theme object as a property to the input component.
-export default function withTheme<BaseProps: {}>(BaseComponent: ComponentType<BaseProps>) {
-  const factory = createEagerFactory(BaseComponent);
-
-  class WithTheme extends React.Component<{ theme?: Object } & BaseProps, { theme: Object }> {
-    static contextTypes = themeListener.contextTypes;
-    static displayName = wrapDisplayName(BaseComponent, 'withTheme');
-    // Exposed for test purposes.
-    static Naked = BaseComponent;
-
+const withTheme = () => Component => {
+  class WithTheme extends React.Component {
     constructor(props, context) {
       super(props, context);
       this.state = {
-        // We use || as it's lazy evaluated.
+        // We use || as the function call is lazy evaluated.
         theme: themeListener.initial(context) || getDefaultTheme(),
       };
     }
@@ -53,9 +43,24 @@ export default function withTheme<BaseProps: {}>(BaseComponent: ComponentType<Ba
     unsubscribeId = null;
 
     render() {
-      return factory({ theme: this.state.theme, ...this.props });
+      return <Component theme={this.state.theme} {...this.props} />;
     }
   }
 
+  WithTheme.contextTypes = themeListener.contextTypes;
+
+  if (process.env.NODE_ENV !== 'production') {
+    WithTheme.displayName = wrapDisplayName(Component, 'WithTheme');
+  }
+
+  hoistNonReactStatics(WithTheme, Component);
+
+  if (process.env.NODE_ENV !== 'production') {
+    // Exposed for test purposes.
+    WithTheme.Naked = Component;
+  }
+
   return WithTheme;
-}
+};
+
+export default withTheme;

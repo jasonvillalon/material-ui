@@ -1,5 +1,3 @@
-// @flow weak
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -15,14 +13,14 @@ const styles = theme => ({
 });
 
 function PaperSheet(props) {
-  const classes = props.classes;
+  const { classes } = props;
   return (
     <div>
       <Paper className={classes.root} elevation={4}>
         <Typography type="headline" component="h3">
           This is a sheet of paper.
         </Typography>
-        <Typography type="body1" component="p">
+        <Typography component="p">
           Paper can be used to build surface or other elements for your application.
         </Typography>
       </Paper>

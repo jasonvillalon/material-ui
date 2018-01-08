@@ -1,5 +1,3 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -27,17 +25,7 @@ class ChipsArray extends React.Component {
     ],
   };
 
-  styles = {
-    chip: {
-      margin: 4,
-    },
-    wrapper: {
-      display: 'flex',
-      flexWrap: 'wrap',
-    },
-  };
-
-  handleRequestDelete = data => () => {
+  handleDelete = data => () => {
     if (data.label === 'ReactJS') {
       alert('Why would you want to delete React?! :)'); // eslint-disable-line no-alert
       return;
@@ -50,7 +38,7 @@ class ChipsArray extends React.Component {
   };
 
   render() {
-    const classes = this.props.classes;
+    const { classes } = this.props;
 
     return (
       <div className={classes.row}>
@@ -59,7 +47,7 @@ class ChipsArray extends React.Component {
             <Chip
               label={data.label}
               key={data.key}
-              onRequestDelete={this.handleRequestDelete(data)}
+              onDelete={this.handleDelete(data)}
               className={classes.chip}
             />
           );

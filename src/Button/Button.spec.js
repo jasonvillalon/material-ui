@@ -1,9 +1,8 @@
-// @flow
-
 import React from 'react';
 import { assert } from 'chai';
 import { createShallow, createRender, getClasses } from '../test-utils';
 import Button from './Button';
+import ButtonBase from '../ButtonBase';
 
 describe('<Button />', () => {
   let shallow;
@@ -18,7 +17,7 @@ describe('<Button />', () => {
 
   it('should render a <ButtonBase> element', () => {
     const wrapper = shallow(<Button>Hello World</Button>);
-    assert.strictEqual(wrapper.name(), 'withStyles(ButtonBase)');
+    assert.strictEqual(wrapper.type(), ButtonBase);
     assert.strictEqual(
       wrapper.props().type,
       'button',
@@ -147,6 +146,28 @@ describe('<Button />', () => {
     assert.strictEqual(wrapper.hasClass(classes.root), true);
     assert.strictEqual(wrapper.hasClass(classes.raised), true, 'should have the raised class');
     assert.strictEqual(wrapper.hasClass(classes.fab), true, 'should have the fab class');
+    assert.strictEqual(
+      wrapper.hasClass(classes.flatPrimary),
+      false,
+      'should not have the primary class',
+    );
+    assert.strictEqual(
+      wrapper.hasClass(classes.flatAccent),
+      false,
+      'should not have the accent class',
+    );
+  });
+
+  it('should render a mini floating action button', () => {
+    const wrapper = shallow(
+      <Button fab mini>
+        Hello World
+      </Button>,
+    );
+    assert.strictEqual(wrapper.hasClass(classes.root), true);
+    assert.strictEqual(wrapper.hasClass(classes.raised), true, 'should have the raised class');
+    assert.strictEqual(wrapper.hasClass(classes.fab), true, 'should have the fab class');
+    assert.strictEqual(wrapper.hasClass(classes.mini), true, 'should have the mini class');
     assert.strictEqual(
       wrapper.hasClass(classes.flatPrimary),
       false,

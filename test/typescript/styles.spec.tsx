@@ -1,58 +1,106 @@
 import * as React from 'react';
 import {
   withStyles,
-  StyleRules,
+  WithStyles,
   createMuiTheme,
   MuiThemeProvider,
   Theme,
+  withTheme,
+  StyleRules,
 } from '../../src/styles';
 import Button from '../../src/Button/Button';
+import { StyleRulesCallback } from '../../src/styles/withStyles';
+import { Contrast } from '../../src/index';
+import {WithTheme} from "../../src/styles/withTheme";
 
-const styles = ({ palette, spacing }) => ({
+// Shared types for examples
+type ComponentClassNames = 'root';
+interface ComponentProps {
+  text: string;
+}
+
+// Example 1
+const styles: StyleRulesCallback<'root'> = ({ palette, spacing }) => ({
   root: {
     padding: spacing.unit,
-    background: palette.background,
+    backgroundColor: palette.background,
     color: palette.primary,
   },
 });
 
-interface StyledComponentClassNames {
-  root: string;
-}
+const StyledExampleOne = withStyles(styles)<
+  ComponentProps
+>(({ classes, text }) => <div className={classes.root}>{text}</div>);
+<StyledExampleOne text="I am styled!" />;
 
-interface StyledComponentProps {
-  text: string;
-}
-
+// Example 2
 const Component: React.SFC<
-  StyledComponentProps & { classes: StyledComponentClassNames }
-> = ({ classes, text }) =>
-  <div className={classes.root}>
-    {text}
-  </div>;
+  ComponentProps & WithStyles<ComponentClassNames>
+> = ({ classes, text }) => <div className={classes.root}>{text}</div>;
 
-const StyledComponent = withStyles<
-  StyledComponentProps,
-  StyledComponentClassNames
->(styles)(Component);
+const StyledExampleTwo = withStyles(styles)(Component);
+<StyledExampleTwo text="I am styled!" />;
 
-<StyledComponent text="I am styled!" />;
-
-// Also works with a plain object
-
-const stylesAsPojo: StyleRules = {
+// Example 3
+const styleRule: StyleRules<ComponentClassNames> = {
   root: {
-    background: 'hotpink',
+    display: 'flex',
+    alignItems: 'stretch',
+    height: '100vh',
+    width: '100%',
   },
 };
 
-const AnotherStyledComponent = withStyles<{}, StyledComponentClassNames>({
-  root: { background: 'hotpink' },
+const ComponentWithChildren: React.SFC<WithStyles<ComponentClassNames>> = ({
+  classes,
+  children,
+}) => <div className={classes.root}>{children}</div>;
+
+const StyledExampleThree = withStyles(styleRule)<{}>(ComponentWithChildren);
+<StyledExampleThree />;
+
+// Also works with a plain object
+const stylesAsPojo = {
+  root: {
+    backgroundColor: 'hotpink',
+  },
+};
+
+const AnotherStyledSFC = withStyles({
+  root: { backgroundColor: 'hotpink' },
 })(({ classes }) => <div className={classes.root}>Stylish!</div>);
 
 // Overriding styles
-
 const theme = createMuiTheme({
+  palette: {
+    type: 'dark',
+    common: {
+      white: '#ffffff',
+    },
+  },
+  typography: {
+    display4: {
+      fontSize: 24,
+    },
+    fontSize: 18,
+  },
+  mixins: {
+    toolbar: {
+      backgroundColor: 'red',
+    }
+  },
+  breakpoints: {
+    step: 3,
+  },
+  transitions: {
+    duration: {
+      short: 50,
+    },
+  },
+  spacing: {},
+  zIndex: {
+    appBar: 42,
+  },
   overrides: {
     MuiButton: {
       // Name of the styleSheet
@@ -70,18 +118,45 @@ const theme = createMuiTheme({
   },
 });
 
-const customTheme = createMuiTheme({
-  palette: {
-    type: 'dark'
-  }
-});
-
 function OverridesTheme() {
   return (
     <MuiThemeProvider theme={theme}>
-      <Button>
-        {'Overrides'}
-      </Button>
+      <Button>{'Overrides'}</Button>
     </MuiThemeProvider>
   );
 }
+
+// withTheme
+const ComponentWithTheme = withTheme()(
+  ({ theme }) => (
+    <div>{theme.spacing.unit}</div>
+  )
+);
+
+<ComponentWithTheme />
+
+// withStyles + withTheme
+type AllTheProps = WithTheme & WithStyles<'root'>
+
+const AllTheComposition = withTheme()(
+  withStyles(styles)(
+    ({ theme, classes }: AllTheProps) => (
+  <div className={classes.root}>{theme.palette.text.primary}</div>
+)));
+
+<AllTheComposition />
+
+// Can't use withStyles effectively as a decorator in TypeScript
+// due to https://github.com/Microsoft/TypeScript/issues/4881
+//@withStyles(styles)
+const DecoratedComponent = withStyles(styles)(
+  class extends React.Component<ComponentProps & WithStyles<'root'>> {
+    render() {
+      const { classes, text } = this.props;
+      return <div className={classes.root}>{text}</div>;
+    }
+  }
+);
+
+// no 'classes' property required at element creation time (#8267)
+<DecoratedComponent text="foo" />;

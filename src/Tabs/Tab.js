@@ -1,20 +1,19 @@
-// @flow
 // @inheritedComponent ButtonBase
 
 import React from 'react';
-import type { Element } from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import withStyles from '../styles/withStyles';
 import ButtonBase from '../ButtonBase';
 import { capitalizeFirstLetter } from '../utils/helpers';
 import Icon from '../Icon';
 
-export const styles = (theme: Object) => ({
+export const styles = theme => ({
   root: {
     ...theme.typography.button,
     maxWidth: 264,
+    position: 'relative',
     minWidth: 72,
-    background: 'none',
     padding: 0,
     height: 48,
     flex: 'none',
@@ -57,6 +56,13 @@ export const styles = (theme: Object) => ({
   fullWidth: {
     flexGrow: 1,
   },
+  wrapper: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    flexDirection: 'column',
+  },
   labelContainer: {
     paddingTop: 6,
     paddingBottom: 6,
@@ -68,86 +74,20 @@ export const styles = (theme: Object) => ({
     },
   },
   label: {
-    fontSize: theme.typography.fontSize,
+    fontSize: theme.typography.pxToRem(theme.typography.fontSize),
     whiteSpace: 'normal',
     [theme.breakpoints.up('md')]: {
-      fontSize: theme.typography.fontSize - 1,
+      fontSize: theme.typography.pxToRem(theme.typography.fontSize - 1),
     },
   },
   labelWrapped: {
-    [theme.breakpoints.down('md')]: {
-      fontSize: theme.typography.fontSize - 2,
+    [theme.breakpoints.down('sm')]: {
+      fontSize: theme.typography.pxToRem(theme.typography.fontSize - 2),
     },
   },
 });
 
-type DefaultProps = {
-  classes: Object,
-};
-
-export type Props = {
-  /**
-   * Useful to extend the style applied to components.
-   */
-  classes?: Object,
-  /**
-   * @ignore
-   */
-  className?: string,
-  /**
-   * If `true`, the tab will be disabled.
-   */
-  disabled?: boolean,
-  /**
-   * @ignore
-   */
-  fullWidth?: boolean,
-  /**
-   * The icon element. If a string is provided, it will be used as a font ligature.
-   */
-  icon?: Element<*>,
-  /**
-   * The label element.
-   */
-  label?: Element<*>,
-  /**
-   * @ignore
-   */
-  onChange?: (event: SyntheticEvent<>, value: any) => void,
-  /**
-   * @ignore
-   */
-  onClick?: (event: SyntheticEvent<>) => void,
-  /**
-   * @ignore
-   */
-  selected?: boolean,
-  /**
-   * @ignore
-   */
-  style?: Object,
-  /**
-   * @ignore
-   */
-  textColor?: 'accent' | 'primary' | 'inherit' | string,
-  /**
-   * You can provide your own value. Otherwise, we fallback to the child position index.
-   */
-  value?: any,
-};
-
-type AllProps = DefaultProps & Props;
-
-type State = {
-  wrappedText: boolean,
-};
-
-class Tab extends React.Component<AllProps, State> {
-  props: AllProps;
-  static defaultProps = {
-    disabled: false,
-  };
-
+class Tab extends React.Component {
   state = {
     wrappedText: false,
   };
@@ -197,6 +137,7 @@ class Tab extends React.Component<AllProps, State> {
       disabled,
       fullWidth,
       icon: iconProp,
+      indicator,
       label: labelProp,
       onChange,
       selected,
@@ -268,11 +209,78 @@ class Tab extends React.Component<AllProps, State> {
         {...other}
         onClick={this.handleChange}
       >
-        {icon}
-        {label}
+        <span className={classes.wrapper}>
+          {icon}
+          {label}
+        </span>
+        {indicator}
       </ButtonBase>
     );
   }
 }
+
+Tab.propTypes = {
+  /**
+   * Useful to extend the style applied to components.
+   */
+  classes: PropTypes.object.isRequired,
+  /**
+   * @ignore
+   */
+  className: PropTypes.string,
+  /**
+   * If `true`, the tab will be disabled.
+   */
+  disabled: PropTypes.bool,
+  /**
+   * @ignore
+   */
+  fullWidth: PropTypes.bool,
+  /**
+   * The icon element. If a string is provided, it will be used as a font ligature.
+   */
+  icon: PropTypes.node,
+  /**
+   * @ignore
+   * For server side rendering consideration, we let the selected tab
+   * render the indicator.
+   */
+  indicator: PropTypes.node,
+  /**
+   * The label element.
+   */
+  label: PropTypes.node,
+  /**
+   * @ignore
+   */
+  onChange: PropTypes.func,
+  /**
+   * @ignore
+   */
+  onClick: PropTypes.func,
+  /**
+   * @ignore
+   */
+  selected: PropTypes.bool,
+  /**
+   * @ignore
+   */
+  style: PropTypes.object,
+  /**
+   * @ignore
+   */
+  textColor: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.oneOf(['accent', 'primary', 'inherit']),
+  ]),
+  /**
+   * You can provide your own value. Otherwise, we fallback to the child position index.
+   */
+  value: PropTypes.any,
+};
+
+Tab.defaultProps = {
+  disabled: false,
+};
 
 export default withStyles(styles, { name: 'MuiTab' })(Tab);

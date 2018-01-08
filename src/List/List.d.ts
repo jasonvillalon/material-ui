@@ -1,12 +1,17 @@
 import * as React from 'react';
-import { StyledComponent } from '..';
+import { StandardProps } from '..';
 
-export interface ListProps extends React.HTMLAttributes<HTMLUListElement> {
-  component?: React.ReactNode;
+export interface ListProps
+  extends StandardProps<React.HTMLAttributes<HTMLUListElement>, ListClassKey> {
+  component?: React.ReactType<ListProps>;
   dense?: boolean;
   disablePadding?: boolean;
   rootRef?: React.Ref<any>;
   subheader?: React.ReactElement<any>;
 }
 
-export default class List extends StyledComponent<ListProps> {}
+export type ListClassKey = 'root' | 'padding' | 'dense' | 'subheader';
+
+declare const List: React.ComponentType<ListProps>;
+
+export default List;

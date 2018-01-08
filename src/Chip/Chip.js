@@ -1,22 +1,22 @@
-// @flow
-
 import React from 'react';
-import type { Element } from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import keycode from 'keycode';
+import CancelIcon from '../internal/svg-icons/Cancel';
 import withStyles from '../styles/withStyles';
-import DeleteIcon from '../svg-icons/cancel';
 import { emphasize, fade } from '../styles/colorManipulator';
+import '../Avatar/Avatar'; // So we don't have any override priority issue.
 
-export const styles = (theme: Object) => {
+export const styles = theme => {
   const height = 32;
-  const backgroundColor = emphasize(theme.palette.background.default, 0.12);
+  const backgroundColor = theme.palette.background.chip;
   const deleteIconColor = fade(theme.palette.text.primary, 0.26);
+
   return {
     root: {
       fontFamily: theme.typography.fontFamily,
-      fontSize: 13,
-      display: 'flex',
+      fontSize: theme.typography.pxToRem(13),
+      display: 'inline-flex',
       alignItems: 'center',
       justifyContent: 'center',
       height,
@@ -24,7 +24,6 @@ export const styles = (theme: Object) => {
       backgroundColor,
       borderRadius: height / 2,
       whiteSpace: 'nowrap',
-      width: 'fit-content',
       transition: theme.transitions.create(),
       // label will inherit this from root, then `clickable` class overrides this for both
       cursor: 'default',
@@ -33,6 +32,8 @@ export const styles = (theme: Object) => {
       padding: 0, // Remove `button` padding
     },
     clickable: {
+      // Remove grey highlight
+      WebkitTapHighlightColor: theme.palette.common.transparent,
       cursor: 'pointer',
       '&:hover, &:focus': {
         backgroundColor: emphasize(backgroundColor, 0.08),
@@ -49,9 +50,9 @@ export const styles = (theme: Object) => {
     },
     avatar: {
       marginRight: -4,
-      width: 32,
-      height: 32,
-      fontSize: 16,
+      width: height,
+      height,
+      fontSize: theme.typography.pxToRem(16),
     },
     avatarChildren: {
       width: 19,
@@ -67,6 +68,8 @@ export const styles = (theme: Object) => {
       cursor: 'inherit',
     },
     deleteIcon: {
+      // Remove grey highlight
+      WebkitTapHighlightColor: theme.palette.common.transparent,
       color: deleteIconColor,
       cursor: 'pointer',
       height: 'auto',
@@ -78,74 +81,31 @@ export const styles = (theme: Object) => {
   };
 };
 
-type DefaultProps = {
-  classes: Object,
-};
-
-export type Props = {
-  /**
-   * Avatar element.
-   */
-  avatar?: Element<*>,
-  /**
-   * Useful to extend the style applied to components.
-   */
-  classes?: Object,
-  /**
-   * @ignore
-   */
-  className?: string,
-  /**
-   * The content of the label.
-   */
-  label?: Element<*>,
-  /**
-   * @ignore
-   */
-  onClick?: Function,
-  /**
-   * @ignore
-   */
-  onKeyDown?: Function,
-  /**
-   * Callback function fired when the delete icon is clicked.
-   * If set, the delete icon will be shown.
-   */
-  onRequestDelete?: (event: SyntheticEvent<>) => void,
-  /**
-   * @ignore
-   */
-  tabIndex?: number,
-};
-
-type AllProps = DefaultProps & Props;
-
 /**
  * Chips represent complex entities in small blocks, such as a contact.
  */
-class Chip extends React.Component<AllProps> {
-  props: AllProps;
-  chipRef: ?HTMLElement = null;
+class Chip extends React.Component {
+  chipRef = null;
 
   handleDeleteIconClick = event => {
     // Stop the event from bubbling up to the `Chip`
     event.stopPropagation();
-    const { onRequestDelete } = this.props;
-    if (onRequestDelete) {
-      onRequestDelete(event);
+    const { onDelete } = this.props;
+    if (onDelete) {
+      onDelete(event);
     }
   };
 
   handleKeyDown = event => {
-    const { onClick, onRequestDelete, onKeyDown } = this.props;
+    const { onClick, onDelete, onKeyDown } = this.props;
     const key = keycode(event);
 
     if (onClick && (key === 'space' || key === 'enter')) {
       event.preventDefault();
       onClick(event);
-    } else if (onRequestDelete && key === 'backspace') {
+    } else if (onDelete && key === 'backspace') {
       event.preventDefault();
-      onRequestDelete(event);
+      onDelete(event);
     } else if (key === 'esc') {
       event.preventDefault();
       if (this.chipRef) {
@@ -163,10 +123,11 @@ class Chip extends React.Component<AllProps> {
       avatar: avatarProp,
       classes,
       className: classNameProp,
+      deleteIcon: deleteIconProp,
       label,
       onClick,
+      onDelete,
       onKeyDown,
-      onRequestDelete,
       tabIndex: tabIndexProp,
       ...other
     } = this.props;
@@ -174,14 +135,19 @@ class Chip extends React.Component<AllProps> {
     const className = classNames(
       classes.root,
       { [classes.clickable]: onClick },
-      { [classes.deletable]: onRequestDelete },
+      { [classes.deletable]: onDelete },
       classNameProp,
     );
 
     let deleteIcon = null;
-    if (onRequestDelete) {
+    if (onDelete && deleteIconProp && React.isValidElement(deleteIconProp)) {
+      deleteIcon = React.cloneElement(deleteIconProp, {
+        onClick: this.handleDeleteIconClick,
+        className: classNames(classes.deleteIcon, deleteIconProp.props.className),
+      });
+    } else if (onDelete) {
       deleteIcon = (
-        <DeleteIcon className={classes.deleteIcon} onClick={this.handleDeleteIconClick} />
+        <CancelIcon className={classes.deleteIcon} onClick={this.handleDeleteIconClick} />
       );
     }
 
@@ -196,7 +162,7 @@ class Chip extends React.Component<AllProps> {
     let tabIndex = tabIndexProp;
 
     if (!tabIndex) {
-      tabIndex = onClick || onRequestDelete ? 0 : -1;
+      tabIndex = onClick || onDelete ? 0 : -1;
     }
 
     return (
@@ -218,5 +184,45 @@ class Chip extends React.Component<AllProps> {
     );
   }
 }
+
+Chip.propTypes = {
+  /**
+   * Avatar element.
+   */
+  avatar: PropTypes.element,
+  /**
+   * Useful to extend the style applied to components.
+   */
+  classes: PropTypes.object.isRequired,
+  /**
+   * @ignore
+   */
+  className: PropTypes.string,
+  /**
+   * Custom delete icon element. Will be shown only if `onDelete` is set.
+   */
+  deleteIcon: PropTypes.element,
+  /**
+   * The content of the label.
+   */
+  label: PropTypes.node,
+  /**
+   * @ignore
+   */
+  onClick: PropTypes.func,
+  /**
+   * Callback function fired when the delete icon is clicked.
+   * If set, the delete icon will be shown.
+   */
+  onDelete: PropTypes.func,
+  /**
+   * @ignore
+   */
+  onKeyDown: PropTypes.func,
+  /**
+   * @ignore
+   */
+  tabIndex: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+};
 
 export default withStyles(styles, { name: 'MuiChip' })(Chip);

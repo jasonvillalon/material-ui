@@ -1,11 +1,10 @@
-// @flow weak
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Avatar from 'material-ui/Avatar';
 import Chip from 'material-ui/Chip';
 import FaceIcon from 'material-ui-icons/Face';
+import Done from 'material-ui-icons/Done';
 import grey from 'material-ui/colors/grey';
 
 const styles = theme => ({
@@ -22,7 +21,7 @@ const styles = theme => ({
   },
 });
 
-function handleRequestDelete() {
+function handleDelete() {
   alert('You clicked the delete icon.'); // eslint-disable-line no-alert
 }
 
@@ -31,7 +30,7 @@ function handleClick() {
 }
 
 function Chips(props) {
-  const classes = props.classes;
+  const { classes } = props;
   return (
     <div className={classes.row}>
       <Chip label="Basic Chip" className={classes.chip} />
@@ -44,7 +43,7 @@ function Chips(props) {
       <Chip
         avatar={<Avatar src="/static/images/uxceo-128.jpg" />}
         label="Deletable Chip"
-        onRequestDelete={handleRequestDelete}
+        onDelete={handleDelete}
         className={classes.chip}
       />
       <Chip
@@ -55,8 +54,15 @@ function Chips(props) {
         }
         label="Clickable Deletable Chip"
         onClick={handleClick}
-        onRequestDelete={handleRequestDelete}
+        onDelete={handleDelete}
         className={classes.chip}
+      />
+      <Chip
+        label="Custom delete icon Chip"
+        onClick={handleClick}
+        onDelete={handleDelete}
+        className={classes.chip}
+        deleteIcon={<Done />}
       />
     </div>
   );

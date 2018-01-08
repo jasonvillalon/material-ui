@@ -1,11 +1,9 @@
-// @flow weak
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import withStyles from '../styles/withStyles';
 
-export const styles = (theme: Object) => ({
+export const styles = theme => ({
   root: {
     display: 'flex',
     justifyContent: 'center',
@@ -28,6 +26,10 @@ function BottomNavigation(props) {
   const className = classNames(classes.root, classNameProp);
 
   const children = React.Children.map(childrenProp, (child, childIndex) => {
+    if (!React.isValidElement(child)) {
+      return null;
+    }
+
     const childValue = child.props.value || childIndex;
     return React.cloneElement(child, {
       selected: childValue === value,
@@ -65,14 +67,14 @@ BottomNavigation.propTypes = {
    */
   onChange: PropTypes.func,
   /**
-   * If `true`, all `BottomNavigationButton`s will show their labels.
-   * By default only the selected `BottomNavigationButton` will show its label.
+   * If `true`, all `BottomNavigationAction`s will show their labels.
+   * By default only the selected `BottomNavigationAction` will show its label.
    */
   showLabels: PropTypes.bool,
   /**
-   * The value of the currently selected `BottomNavigationButton`.
+   * The value of the currently selected `BottomNavigationAction`.
    */
-  value: PropTypes.any.isRequired,
+  value: PropTypes.any,
 };
 
 BottomNavigation.defaultProps = {

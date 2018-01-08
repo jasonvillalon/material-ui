@@ -1,5 +1,3 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -13,6 +11,7 @@ import Divider from 'material-ui/Divider';
 import IconButton from 'material-ui/IconButton';
 import MenuIcon from 'material-ui-icons/Menu';
 import ChevronLeftIcon from 'material-ui-icons/ChevronLeft';
+import ChevronRightIcon from 'material-ui-icons/ChevronRight';
 import { mailFolderListItems, otherMailFolderListItems } from './tileData';
 
 const drawerWidth = 240;
@@ -33,7 +32,7 @@ const styles = theme => ({
   },
   appBar: {
     position: 'absolute',
-    zIndex: theme.zIndex.navDrawer + 1,
+    zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -56,7 +55,7 @@ const styles = theme => ({
   },
   drawerPaper: {
     position: 'relative',
-    height: 'auto',
+    height: '100%',
     width: drawerWidth,
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
@@ -65,6 +64,7 @@ const styles = theme => ({
   },
   drawerPaperClose: {
     width: 60,
+    overflowX: 'hidden',
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -79,10 +79,7 @@ const styles = theme => ({
     alignItems: 'center',
     justifyContent: 'flex-end',
     padding: '0 8px',
-    height: 56,
-    [theme.breakpoints.up('sm')]: {
-      height: 64,
-    },
+    ...theme.mixins.toolbar,
   },
   content: {
     width: '100%',
@@ -112,7 +109,7 @@ class MiniDrawer extends React.Component {
   };
 
   render() {
-    const classes = this.props.classes;
+    const { classes, theme } = this.props;
 
     return (
       <div className={classes.root}>
@@ -142,7 +139,7 @@ class MiniDrawer extends React.Component {
             <div className={classes.drawerInner}>
               <div className={classes.drawerHeader}>
                 <IconButton onClick={this.handleDrawerClose}>
-                  <ChevronLeftIcon />
+                  {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
                 </IconButton>
               </div>
               <Divider />
@@ -152,9 +149,7 @@ class MiniDrawer extends React.Component {
             </div>
           </Drawer>
           <main className={classes.content}>
-            <Typography type="body1" noWrap>
-              {'You think water moves fast? You should see ice.'}
-            </Typography>
+            <Typography noWrap>{'You think water moves fast? You should see ice.'}</Typography>
           </main>
         </div>
       </div>
@@ -164,6 +159,7 @@ class MiniDrawer extends React.Component {
 
 MiniDrawer.propTypes = {
   classes: PropTypes.object.isRequired,
+  theme: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(MiniDrawer);
+export default withStyles(styles, { withTheme: true })(MiniDrawer);

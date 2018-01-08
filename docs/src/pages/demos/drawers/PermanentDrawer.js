@@ -1,12 +1,13 @@
-// @flow weak
-
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import { withStyles } from 'material-ui/styles';
 import Drawer from 'material-ui/Drawer';
 import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import List from 'material-ui/List';
+import { MenuItem } from 'material-ui/Menu';
+import TextField from 'material-ui/TextField';
 import Typography from 'material-ui/Typography';
 import Divider from 'material-ui/Divider';
 import { mailFolderListItems, otherMailFolderListItems } from './tileData';
@@ -30,20 +31,19 @@ const styles = theme => ({
   appBar: {
     position: 'absolute',
     width: `calc(100% - ${drawerWidth}px)`,
+  },
+  'appBar-left': {
     marginLeft: drawerWidth,
-    order: 1,
+  },
+  'appBar-right': {
+    marginRight: drawerWidth,
   },
   drawerPaper: {
     position: 'relative',
-    height: 'auto',
+    height: '100%',
     width: drawerWidth,
   },
-  drawerHeader: {
-    height: 56,
-    [theme.breakpoints.up('sm')]: {
-      height: 64,
-    },
-  },
+  drawerHeader: theme.mixins.toolbar,
   content: {
     backgroundColor: theme.palette.background.default,
     width: '100%',
@@ -57,39 +57,76 @@ const styles = theme => ({
   },
 });
 
-function PermanentDrawer(props) {
-  const { classes } = props;
+class PermanentDrawer extends React.Component {
+  state = {
+    anchor: 'left',
+  };
 
-  return (
-    <div className={classes.root}>
-      <div className={classes.appFrame}>
-        <AppBar className={classes.appBar}>
-          <Toolbar>
-            <Typography type="title" color="inherit" noWrap>
-              Permanent drawer
-            </Typography>
-          </Toolbar>
-        </AppBar>
-        <Drawer
-          type="permanent"
-          classes={{
-            paper: classes.drawerPaper,
-          }}
+  handleChange = event => {
+    this.setState({
+      anchor: event.target.value,
+    });
+  };
+
+  render() {
+    const { classes } = this.props;
+    const { anchor } = this.state;
+
+    const drawer = (
+      <Drawer
+        type="permanent"
+        classes={{
+          paper: classes.drawerPaper,
+        }}
+        anchor={anchor}
+      >
+        <div className={classes.drawerHeader} />
+        <Divider />
+        <List>{mailFolderListItems}</List>
+        <Divider />
+        <List>{otherMailFolderListItems}</List>
+      </Drawer>
+    );
+
+    let before = null;
+    let after = null;
+
+    if (anchor === 'left') {
+      before = drawer;
+    } else {
+      after = drawer;
+    }
+
+    return (
+      <div className={classes.root}>
+        <TextField
+          id="permanent-anchor"
+          select
+          label="Anchor"
+          value={anchor}
+          onChange={this.handleChange}
+          margin="normal"
         >
-          <div className={classes.drawerHeader} />
-          <Divider />
-          <List>{mailFolderListItems}</List>
-          <Divider />
-          <List>{otherMailFolderListItems}</List>
-        </Drawer>
-        <main className={classes.content}>
-          <Typography type="body1" noWrap>
-            {'You think water moves fast? You should see ice.'}
-          </Typography>
-        </main>
+          <MenuItem value="left">left</MenuItem>
+          <MenuItem value="right">right</MenuItem>
+        </TextField>
+        <div className={classes.appFrame}>
+          <AppBar className={classNames(classes.appBar, classes[`appBar-${anchor}`])}>
+            <Toolbar>
+              <Typography type="title" color="inherit" noWrap>
+                Permanent drawer
+              </Typography>
+            </Toolbar>
+          </AppBar>
+          {before}
+          <main className={classes.content}>
+            <Typography>{'You think water moves fast? You should see ice.'}</Typography>
+          </main>
+          {after}
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 PermanentDrawer.propTypes = {

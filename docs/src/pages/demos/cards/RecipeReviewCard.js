@@ -1,5 +1,3 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -13,6 +11,7 @@ import red from 'material-ui/colors/red';
 import FavoriteIcon from 'material-ui-icons/Favorite';
 import ShareIcon from 'material-ui-icons/Share';
 import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
+import MoreVertIcon from 'material-ui-icons/MoreVert';
 
 const styles = theme => ({
   card: {
@@ -46,7 +45,7 @@ class RecipeReviewCard extends React.Component {
   };
 
   render() {
-    const classes = this.props.classes;
+    const { classes } = this.props;
 
     return (
       <div>
@@ -56,6 +55,11 @@ class RecipeReviewCard extends React.Component {
               <Avatar aria-label="Recipe" className={classes.avatar}>
                 R
               </Avatar>
+            }
+            action={
+              <IconButton>
+                <MoreVertIcon />
+              </IconButton>
             }
             title="Shrimp and Chorizo Paella"
             subheader="September 14, 2016"
@@ -90,7 +94,7 @@ class RecipeReviewCard extends React.Component {
               <ExpandMoreIcon />
             </IconButton>
           </CardActions>
-          <Collapse in={this.state.expanded} transitionDuration="auto" unmountOnExit>
+          <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
             <CardContent>
               <Typography paragraph type="body2">
                 Method:

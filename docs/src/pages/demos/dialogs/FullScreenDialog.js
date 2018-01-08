@@ -1,5 +1,3 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -23,39 +21,43 @@ const styles = {
   },
 };
 
+function Transition(props) {
+  return <Slide direction="up" {...props} />;
+}
+
 class FullScreenDialog extends React.Component {
   state = {
     open: false,
   };
 
-  handleRequestClose = () => {
-    this.setState({ open: false });
+  handleClickOpen = () => {
+    this.setState({ open: true });
   };
 
-  handleOpen = () => {
-    this.setState({ open: true });
+  handleClose = () => {
+    this.setState({ open: false });
   };
 
   render() {
     const { classes } = this.props;
     return (
       <div>
-        <Button onClick={this.handleOpen}>Open full-screen dialog</Button>
+        <Button onClick={this.handleClickOpen}>Open full-screen dialog</Button>
         <Dialog
           fullScreen
           open={this.state.open}
-          onRequestClose={this.handleRequestClose}
-          transition={<Slide direction="up" />}
+          onClose={this.handleClose}
+          transition={Transition}
         >
           <AppBar className={classes.appBar}>
             <Toolbar>
-              <IconButton color="contrast" onClick={this.handleRequestClose} aria-label="Close">
+              <IconButton color="contrast" onClick={this.handleClose} aria-label="Close">
                 <CloseIcon />
               </IconButton>
               <Typography type="title" color="inherit" className={classes.flex}>
                 Sound
               </Typography>
-              <Button color="contrast" onClick={this.handleRequestClose}>
+              <Button color="contrast" onClick={this.handleClose}>
                 save
               </Button>
             </Toolbar>

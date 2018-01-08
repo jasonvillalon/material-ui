@@ -1,4 +1,3 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
 /* eslint-disable react/no-multi-comp */
 
 import React from 'react';
@@ -16,26 +15,26 @@ import blue from 'material-ui/colors/blue';
 const emails = ['username@gmail.com', 'user02@gmail.com'];
 const styles = {
   avatar: {
-    background: blue[100],
+    backgroundColor: blue[100],
     color: blue[600],
   },
 };
 
 class SimpleDialog extends React.Component {
-  handleRequestClose = () => {
-    this.props.onRequestClose(this.props.selectedValue);
+  handleClose = () => {
+    this.props.onClose(this.props.selectedValue);
   };
 
   handleListItemClick = value => {
-    this.props.onRequestClose(value);
+    this.props.onClose(value);
   };
 
   render() {
-    const { classes, onRequestClose, selectedValue, ...other } = this.props;
+    const { classes, onClose, selectedValue, ...other } = this.props;
 
     return (
-      <Dialog onRequestClose={this.handleRequestClose} {...other}>
-        <DialogTitle>Set backup account</DialogTitle>
+      <Dialog onClose={this.handleClose} aria-labelledby="simple-dialog-title" {...other}>
+        <DialogTitle id="simple-dialog-title">Set backup account</DialogTitle>
         <div>
           <List>
             {emails.map(email => (
@@ -65,20 +64,25 @@ class SimpleDialog extends React.Component {
 
 SimpleDialog.propTypes = {
   classes: PropTypes.object.isRequired,
-  onRequestClose: PropTypes.func,
+  onClose: PropTypes.func,
   selectedValue: PropTypes.string,
 };
 
 const SimpleDialogWrapped = withStyles(styles)(SimpleDialog);
 
 class SimpleDialogDemo extends React.Component {
-  static defaultProps: {};
   state = {
     open: false,
     selectedValue: emails[1],
   };
 
-  handleRequestClose = value => {
+  handleClickOpen = () => {
+    this.setState({
+      open: true,
+    });
+  };
+
+  handleClose = value => {
     this.setState({ selectedValue: value, open: false });
   };
 
@@ -87,11 +91,11 @@ class SimpleDialogDemo extends React.Component {
       <div>
         <Typography type="subheading">Selected: {this.state.selectedValue}</Typography>
         <br />
-        <Button onClick={() => this.setState({ open: true })}>Open simple dialog</Button>
+        <Button onClick={this.handleClickOpen}>Open simple dialog</Button>
         <SimpleDialogWrapped
           selectedValue={this.state.selectedValue}
           open={this.state.open}
-          onRequestClose={this.handleRequestClose}
+          onClose={this.handleClose}
         />
       </div>
     );

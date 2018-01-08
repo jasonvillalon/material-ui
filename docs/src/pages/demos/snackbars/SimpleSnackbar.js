@@ -1,5 +1,3 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -18,14 +16,13 @@ const styles = theme => ({
 class SimpleSnackbar extends React.Component {
   state = {
     open: false,
-    message: null,
   };
 
   handleClick = () => {
     this.setState({ open: true });
   };
 
-  handleRequestClose = (event, reason) => {
+  handleClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
     }
@@ -44,14 +41,14 @@ class SimpleSnackbar extends React.Component {
             horizontal: 'left',
           }}
           open={this.state.open}
-          autoHideDuration={6e3}
-          onRequestClose={this.handleRequestClose}
+          autoHideDuration={6000}
+          onClose={this.handleClose}
           SnackbarContentProps={{
             'aria-describedby': 'message-id',
           }}
           message={<span id="message-id">Note archived</span>}
           action={[
-            <Button key="undo" color="accent" dense onClick={this.handleRequestClose}>
+            <Button key="undo" color="accent" dense onClick={this.handleClose}>
               UNDO
             </Button>,
             <IconButton
@@ -59,7 +56,7 @@ class SimpleSnackbar extends React.Component {
               aria-label="Close"
               color="inherit"
               className={classes.close}
-              onClick={this.handleRequestClose}
+              onClick={this.handleClose}
             >
               <CloseIcon />
             </IconButton>,

@@ -1,9 +1,11 @@
 import * as React from 'react';
-import { StyledComponent } from '..';
+import { StandardProps } from '..';
 
 export interface DialogContentProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+  extends StandardProps<React.HTMLAttributes<HTMLDivElement>, DialogContentClassKey> {}
 
-export default class DialogContent extends StyledComponent<
-  DialogContentProps
-> {}
+export type DialogContentClassKey = 'root';
+
+declare const DialogContent: React.ComponentType<DialogContentProps>;
+
+export default DialogContent;

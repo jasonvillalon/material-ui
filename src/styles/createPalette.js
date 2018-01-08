@@ -35,6 +35,10 @@ export const light = {
     paper: common.white,
     appBar: grey[100],
     contentFrame: grey[200],
+    chip: grey[300],
+  },
+  line: {
+    stepper: grey[400],
   },
 };
 
@@ -64,22 +68,51 @@ export const dark = {
     paper: grey[800],
     appBar: grey[900],
     contentFrame: grey[900],
-    status: common.black,
+    chip: grey[800],
+  },
+  line: {
+    stepper: grey[600],
   },
 };
 
-function getContrastText(color) {
-  if (getContrastRatio(color, common.black) < 7) {
-    return dark.text.primary;
-  }
-  return light.text.primary;
-}
-
 export default function createPalette(palette: Object) {
-  const { primary = indigo, secondary = pink, error = red, type = 'light', ...other } = palette;
+  const {
+    primary = indigo,
+    secondary = pink,
+    error = red,
+    type = 'light',
+    // Same value used by material-components-web
+    // https://github.com/material-components/material-components-web/blob/ac46b8863c4dab9fc22c4c662dc6bd1b65dd652f/packages/mdc-theme/_functions.scss#L49
+    contrastThreshold = 3.1,
+    ...other
+  } = palette;
   const shades = { dark, light };
 
-  warning(shades[type], `Material-UI: the palette type \`${type}\` is not supported.`);
+  warning(Boolean(shades[type]), `Material-UI: the palette type \`${type}\` is not supported.`);
+
+  function getContrastText(background) {
+    // Use the same logic than
+    // Bootstrap: https://github.com/twbs/bootstrap/blob/1d6e3710dd447de1a200f29e8fa521f8a0908f70/scss/_functions.scss#L59
+    // and material-components-web https://github.com/material-components/material-components-web/blob/ac46b8863c4dab9fc22c4c662dc6bd1b65dd652f/packages/mdc-theme/_functions.scss#L54
+    const contrastText =
+      getContrastRatio(background, dark.text.primary) >= contrastThreshold
+        ? dark.text.primary
+        : light.text.primary;
+
+    if (process.env.NODE_ENV !== 'production') {
+      const contrast = getContrastRatio(background, contrastText);
+      warning(
+        contrast >= 3,
+        [
+          `Material-UI: the contrast ratio of ${contrast}:1 for ${contrastText} on ${background}`,
+          'falls below the WACG recommended absolute minimum contrast ratio of 3:1.',
+          'https://www.w3.org/TR/2008/REC-WCAG20-20081211/#visual-audio-contrast-contrast',
+        ].join('\n'),
+      );
+    }
+
+    return contrastText;
+  }
 
   const paletteOutput = deepmerge(
     {
@@ -94,9 +127,14 @@ export default function createPalette(palette: Object) {
       input: shades[type].input,
       action: shades[type].action,
       background: shades[type].background,
+      line: shades[type].line,
+      contrastThreshold,
       getContrastText,
     },
     other,
+    {
+      clone: false, // No need to clone deep
+    },
   );
 
   // Dev warnings

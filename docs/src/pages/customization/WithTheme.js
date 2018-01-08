@@ -1,5 +1,3 @@
-// @flow weak
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import Typography from 'material-ui/Typography';
@@ -12,12 +10,12 @@ function WithTheme(props) {
 
   const styles = {
     primaryText: {
-      background: theme.palette.background.default,
+      backgroundColor: theme.palette.background.default,
       padding: `${theme.spacing.unit}px ${theme.spacing.unit * 2}px`,
       color: primaryText,
     },
     primaryColor: {
-      background: primaryColor,
+      backgroundColor: primaryColor,
       padding: `${theme.spacing.unit}px ${theme.spacing.unit * 2}px`,
       color: '#fff',
     },
@@ -35,4 +33,4 @@ WithTheme.propTypes = {
   theme: PropTypes.object.isRequired,
 };
 
-export default withTheme(WithTheme); // Let's get the theme as a property
+export default withTheme()(WithTheme); // Let's get the theme as a property

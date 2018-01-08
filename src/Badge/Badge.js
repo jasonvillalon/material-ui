@@ -1,5 +1,3 @@
-// @flow weak
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
@@ -8,10 +6,12 @@ import { capitalizeFirstLetter } from '../utils/helpers';
 
 const RADIUS = 12;
 
-export const styles = (theme: Object) => ({
+export const styles = theme => ({
   root: {
     position: 'relative',
-    display: 'inline-block',
+    display: 'inline-flex',
+    // For correct alignment with the text.
+    verticalAlign: 'middle',
   },
   badge: {
     display: 'flex',
@@ -25,12 +25,13 @@ export const styles = (theme: Object) => ({
     right: -RADIUS,
     fontFamily: theme.typography.fontFamily,
     fontWeight: theme.typography.fontWeight,
-    fontSize: RADIUS,
+    fontSize: theme.typography.pxToRem(RADIUS),
     width: RADIUS * 2,
     height: RADIUS * 2,
     borderRadius: '50%',
     backgroundColor: theme.palette.color,
     color: theme.palette.textColor,
+    zIndex: 1, // Render the badge on top of potential ripples.
   },
   colorPrimary: {
     backgroundColor: theme.palette.primary[500],
@@ -44,13 +45,13 @@ export const styles = (theme: Object) => ({
 
 function Badge(props) {
   const { badgeContent, classes, className: classNameProp, color, children, ...other } = props;
-  const className = classNames(classes.root, classNameProp);
+
   const badgeClassName = classNames(classes.badge, {
     [classes[`color${capitalizeFirstLetter(color)}`]]: color !== 'default',
   });
 
   return (
-    <div className={className} {...other}>
+    <div className={classNames(classes.root, classNameProp)} {...other}>
       {children}
       <span className={badgeClassName}>{badgeContent}</span>
     </div>

@@ -1,14 +1,13 @@
-// @flow
-
 import React from 'react';
 import keycode from 'keycode';
 import { assert } from 'chai';
 import { spy, useFakeTimers } from 'sinon';
-import { createShallow, createMount, getClasses } from '../test-utils';
+import { createShallow, createMount, getClasses, unwrap } from '../test-utils';
 import { focusKeyPressed } from '../utils/keyboardFocus';
-import consoleErrorMock from '../../test/utils/consoleErrorMock';
 import TouchRipple from './TouchRipple';
 import ButtonBase from './ButtonBase';
+
+const ButtonBaseNaked = unwrap(ButtonBase);
 
 describe('<ButtonBase />', () => {
   let mount;
@@ -16,9 +15,7 @@ describe('<ButtonBase />', () => {
   let classes;
 
   before(() => {
-    shallow = createShallow({
-      dive: true,
-    });
+    shallow = createShallow({ dive: true, disableLifecycleMethods: true });
     mount = createMount();
     classes = getClasses(<ButtonBase />);
   });
@@ -45,7 +42,7 @@ describe('<ButtonBase />', () => {
       const wrapper = shallow(<ButtonBase component="span" role="checkbox" aria-checked={false} />);
       assert.strictEqual(wrapper.name(), 'span');
       assert.strictEqual(wrapper.props().role, 'checkbox', 'should be role checkbox');
-      assert.strictEqual(wrapper.props().tabIndex, '0', 'should be 0');
+      assert.strictEqual(wrapper.props().tabIndex, 0, 'should be 0');
     });
 
     it('should spread props on button', () => {
@@ -312,9 +309,9 @@ describe('<ButtonBase />', () => {
     before(() => {
       clock = useFakeTimers();
       wrapper = mount(
-        <ButtonBase.Naked classes={{}} id="test-button">
+        <ButtonBaseNaked classes={{}} id="test-button">
           Hello
-        </ButtonBase.Naked>,
+        </ButtonBaseNaked>,
       );
       instance = wrapper.instance();
       button = document.getElementById('test-button');
@@ -350,7 +347,7 @@ describe('<ButtonBase />', () => {
   describe('prop: disabled', () => {
     it('should apply the right tabIndex', () => {
       const wrapper = shallow(<ButtonBase disabled>Hello</ButtonBase>);
-      assert.strictEqual(wrapper.props().tabIndex, '-1', 'should not receive the focus');
+      assert.strictEqual(wrapper.props().tabIndex, -1, 'should not receive the focus');
     });
 
     it('should also apply it when using component', () => {
@@ -360,6 +357,18 @@ describe('<ButtonBase />', () => {
         </ButtonBase>,
       );
       assert.strictEqual(wrapper.find('button').props().disabled, true);
+    });
+
+    it('should reset the focused state', () => {
+      const wrapper = shallow(<ButtonBase>Hello</ButtonBase>);
+      // We simulate a keyboardFocused button that is getting disabled.
+      wrapper.setState({
+        keyboardFocused: true,
+      });
+      wrapper.setProps({
+        disabled: true,
+      });
+      assert.strictEqual(wrapper.state().keyboardFocused, false);
     });
   });
 
@@ -376,24 +385,20 @@ describe('<ButtonBase />', () => {
 
     before(() => {
       clock = useFakeTimers();
-      consoleErrorMock.spy();
     });
 
     after(() => {
       clock.restore();
-      consoleErrorMock.reset();
     });
 
     it('when disabled should not persist event', () => {
       const wrapper = mount(
-        <ButtonBase.Naked classes={{}} disabled>
+        <ButtonBaseNaked classes={{}} disabled>
           Hello
-        </ButtonBase.Naked>,
+        </ButtonBaseNaked>,
       );
       const instance = wrapper.instance();
-      const eventMock = {
-        persist: spy(),
-      };
+      const eventMock = { persist: spy() };
       instance.handleFocus(eventMock);
       assert.strictEqual(eventMock.persist.callCount, 0);
     });
@@ -402,9 +407,9 @@ describe('<ButtonBase />', () => {
       const eventMock = 'woofButtonBase';
       const onKeyboardFocusSpy = spy();
       const wrapper = mount(
-        <ButtonBase.Naked classes={{}} component="span" onKeyboardFocus={onKeyboardFocusSpy}>
+        <ButtonBaseNaked classes={{}} component="span" onKeyboardFocus={onKeyboardFocusSpy}>
           Hello
-        </ButtonBase.Naked>,
+        </ButtonBaseNaked>,
       );
       const instance = wrapper.instance();
       instance.onKeyboardFocusHandler(eventMock);
@@ -420,11 +425,10 @@ describe('<ButtonBase />', () => {
         </a>
       );
       const wrapper = mount(
-        <ButtonBase.Naked classes={{}} component={MyLink}>
+        <ButtonBaseNaked classes={{}} component={MyLink}>
           Hello
-        </ButtonBase.Naked>,
+        </ButtonBaseNaked>,
       );
-      assert.match(consoleErrorMock.args()[0][0], /Material-UI: please provide a class/);
       const instance = wrapper.instance();
       instance.focusKeyPressed = true;
       wrapper.simulate('focus');
@@ -439,22 +443,16 @@ describe('<ButtonBase />', () => {
 
     describe('avoids multiple keydown presses', () => {
       it('should work', () => {
-        wrapper = mount(<ButtonBase.Naked classes={{}}>Hello</ButtonBase.Naked>);
-        wrapper.setProps({
-          focusRipple: true,
-        });
-        wrapper.setState({
-          keyboardFocused: true,
-        });
+        wrapper = mount(<ButtonBaseNaked classes={{}}>Hello</ButtonBaseNaked>);
+        wrapper.setProps({ focusRipple: true });
+        wrapper.setState({ keyboardFocused: true });
 
         const eventPersistSpy = spy();
         event = { persist: eventPersistSpy, keyCode: keycode('space') };
 
         instance = wrapper.instance();
         instance.keyDown = false;
-        instance.ripple = {
-          stop: spy(),
-        };
+        instance.ripple = { stop: spy() };
         instance.handleKeyDown(event);
         assert.strictEqual(instance.keyDown, true, 'should mark keydown as true');
         assert.strictEqual(event.persist.callCount, 1, 'should call event.persist exactly once');
@@ -469,11 +467,9 @@ describe('<ButtonBase />', () => {
 
     describe('prop: onKeyDown', () => {
       it('should work', () => {
-        wrapper = mount(<ButtonBase.Naked classes={{}}>Hello</ButtonBase.Naked>);
+        wrapper = mount(<ButtonBaseNaked classes={{}}>Hello</ButtonBaseNaked>);
         const onKeyDownSpy = spy();
-        wrapper.setProps({
-          onKeyDown: onKeyDownSpy,
-        });
+        wrapper.setProps({ onKeyDown: onKeyDownSpy });
 
         const eventPersistSpy = spy();
         event = { persist: eventPersistSpy, keyCode: undefined };
@@ -495,12 +491,9 @@ describe('<ButtonBase />', () => {
 
     describe('Keyboard accessibility for non interactive elements', () => {
       it('should work', () => {
-        wrapper = mount(<ButtonBase.Naked classes={{}}>Hello</ButtonBase.Naked>);
+        wrapper = mount(<ButtonBaseNaked classes={{}}>Hello</ButtonBaseNaked>);
         const onClickSpy = spy();
-        wrapper.setProps({
-          onClick: onClickSpy,
-          component: 'woofButtonBase',
-        });
+        wrapper.setProps({ onClick: onClickSpy, component: 'div' });
 
         const eventTargetMock = 'woofButtonBase';
         event = {
@@ -524,18 +517,17 @@ describe('<ButtonBase />', () => {
     });
   });
 
-  describe('focus()', () => {
-    it('should call the focus on the instance.button', () => {
-      const instance = mount(
-        <ButtonBase.Naked classes={{}} component="span">
-          Hello
-        </ButtonBase.Naked>,
-      ).instance();
-      instance.button = {
-        focus: spy(),
-      };
-      instance.focus();
-      assert.strictEqual(instance.button.focus.callCount, 1);
+  describe('prop: rootRef', () => {
+    it('should be able to get a ref of the root element', () => {
+      const refCallback = spy();
+      const wrapper = mount(<ButtonBase rootRef={refCallback}>Hello</ButtonBase>);
+      assert.strictEqual(refCallback.callCount, 1, 'should call the ref function');
+      refCallback.args[0][0].focus();
+      assert.strictEqual(
+        document.activeElement,
+        wrapper.getDOMNode(),
+        'should be able to use the ref to focus the button',
+      );
     });
   });
 });

@@ -1,4 +1,3 @@
-// @flow weak
 // @inheritedComponent ButtonBase
 
 import React from 'react';
@@ -8,28 +7,22 @@ import withStyles from '../styles/withStyles';
 import ButtonBase from '../ButtonBase';
 import { capitalizeFirstLetter } from '../utils/helpers';
 import Icon from '../Icon';
-import { isMuiComponent } from '../utils/reactHelpers';
+import { isMuiElement } from '../utils/reactHelpers';
+import '../SvgIcon'; // Ensure CSS specificity
 
-export const styles = (theme: Object) => ({
+export const styles = theme => ({
   root: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
     textAlign: 'center',
     flex: '0 0 auto',
-    fontSize: 24,
+    fontSize: theme.typography.pxToRem(24),
     width: theme.spacing.unit * 6,
     height: theme.spacing.unit * 6,
     padding: 0,
     borderRadius: '50%',
-    backgroundColor: 'transparent',
     color: theme.palette.action.active,
     transition: theme.transitions.create('background-color', {
       duration: theme.transitions.duration.shortest,
     }),
-  },
-  disabled: {
-    color: theme.palette.action.disabled,
   },
   colorAccent: {
     color: theme.palette.secondary.A200,
@@ -42,6 +35,9 @@ export const styles = (theme: Object) => ({
   },
   colorInherit: {
     color: 'inherit',
+  },
+  disabled: {
+    color: theme.palette.action.disabled,
   },
   label: {
     width: '100%',
@@ -63,7 +59,7 @@ export const styles = (theme: Object) => ({
  * regarding the available icon options.
  */
 function IconButton(props) {
-  const { children, classes, className, color, disabled, rootRef, ...other } = props;
+  const { buttonRef, children, classes, className, color, disabled, rootRef, ...other } = props;
 
   return (
     <ButtonBase
@@ -78,6 +74,7 @@ function IconButton(props) {
       centerRipple
       keyboardFocusedClassName={classes.keyboardFocused}
       disabled={disabled}
+      rootRef={buttonRef}
       ref={rootRef}
       {...other}
     >
@@ -86,7 +83,7 @@ function IconButton(props) {
           <Icon className={classes.icon}>{children}</Icon>
         ) : (
           React.Children.map(children, child => {
-            if (isMuiComponent(child, 'Icon')) {
+            if (isMuiElement(child, ['Icon', 'SvgIcon'])) {
               return React.cloneElement(child, {
                 className: classNames(classes.icon, child.props.className),
               });
@@ -101,6 +98,10 @@ function IconButton(props) {
 }
 
 IconButton.propTypes = {
+  /**
+   * Use that property to pass a ref callback to the native button component.
+   */
+  buttonRef: PropTypes.func,
   /**
    * The icon element.
    * If a string is provided, it will be used as an icon font ligature.

@@ -1,28 +1,27 @@
-// @flow
-
 import React from 'react';
-import type { ChildrenArray, Node } from 'react';
+import PropTypes from 'prop-types';
 import warning from 'warning';
-import compose from 'recompose/compose';
 import classNames from 'classnames';
 import EventListener from 'react-event-listener';
 import debounce from 'lodash/debounce';
 import ScrollbarSize from 'react-scrollbar-size';
+import { getNormalizedScrollLeft, detectScrollType } from 'normalize-scroll-left';
 import scroll from 'scroll';
-import pick from 'lodash/pick';
 import withStyles from '../styles/withStyles';
-import withWidth, { isWidthUp } from '../utils/withWidth';
 import TabIndicator from './TabIndicator';
 import TabScrollButton from './TabScrollButton';
 
-export const styles = {
+export const styles = theme => ({
   root: {
     overflow: 'hidden',
+    minHeight: 48,
+    WebkitOverflowScrolling: 'touch', // Add iOS momentum scrolling.
   },
   flexContainer: {
     display: 'flex',
   },
   scrollingContainer: {
+    position: 'relative',
     display: 'inline-block',
     flex: '1 1 auto',
     whiteSpace: 'nowrap',
@@ -37,116 +36,14 @@ export const styles = {
   centered: {
     justifyContent: 'center',
   },
-};
+  buttonAuto: {
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
+  },
+});
 
-type DefaultProps = {
-  classes: Object,
-};
-
-export type Props = {
-  /**
-   * The CSS class name of the scroll button elements.
-   */
-  buttonClassName?: string,
-  /**
-   * If `true`, the tabs will be centered.
-   * This property is intended for large views.
-   */
-  centered?: boolean,
-  /**
-   * The content of the component.
-   */
-  children?: $ReadOnlyArray<ChildrenArray<Node>>,
-  /**
-   * Useful to extend the style applied to components.
-   */
-  classes?: Object,
-  /**
-   * @ignore
-   */
-  className?: string,
-  /**
-   * If `true`, the tabs will grow to use all the available space.
-   * This property is intended for small views.
-   */
-  fullWidth?: boolean,
-  /**
-   * The CSS class name of the indicator element.
-   */
-  indicatorClassName?: string,
-  /**
-   * Determines the color of the indicator.
-   */
-  indicatorColor?: 'accent' | 'primary' | string,
-  /**
-   * Callback fired when the value changes.
-   *
-   * @param {object} event The event source of the callback
-   * @param {number} value We default to the index of the child
-   */
-  onChange: Function,
-  /**
-   * True invokes scrolling properties and allow for horizontally scrolling
-   * (or swiping) the tab bar.
-   */
-  scrollable?: boolean,
-  /**
-   * Determine behavior of scroll buttons when tabs are set to scroll
-   * `auto` will only present them on medium and larger viewports
-   * `on` will always present them
-   * `off` will never present them
-   */
-  scrollButtons?: 'auto' | 'on' | 'off',
-  /**
-   * Determines the color of the `Tab`.
-   */
-  textColor?: 'accent' | 'primary' | 'inherit',
-  /**
-   * The value of the currently selected `Tab`.
-   * If you don't want any selected `Tab`, you can set this property to `false`.
-   */
-  value: any,
-  /**
-   * @ignore
-   * width prop provided by withWidth decorator
-   */
-  width?: string,
-};
-
-type AllProps = DefaultProps & Props;
-
-type State = {
-  indicatorStyle: Object,
-  scrollerStyle: Object,
-  showLeftScroll: boolean,
-  showRightScroll: boolean,
-};
-
-type TabsMeta = {
-  scrollLeft: number,
-  // ClientRect
-  left: number,
-  width: number,
-  right: number,
-  top: number,
-  bottom: number,
-  height: number,
-};
-
-/**
- * Notice that this Component is incompatible with server side rendering.
- */
-class Tabs extends React.Component<AllProps, State> {
-  props: AllProps;
-  static defaultProps = {
-    centered: false,
-    fullWidth: false,
-    indicatorColor: 'accent',
-    scrollable: false,
-    scrollButtons: 'auto',
-    textColor: 'inherit',
-  };
-
+class Tabs extends React.Component {
   state = {
     indicatorStyle: {},
     scrollerStyle: {
@@ -154,25 +51,24 @@ class Tabs extends React.Component<AllProps, State> {
     },
     showLeftScroll: false,
     showRightScroll: false,
+    mounted: false,
   };
 
   componentDidMount() {
+    // eslint-disable-next-line react/no-did-mount-set-state
+    this.setState({ mounted: true });
     this.updateIndicatorState(this.props);
     this.updateScrollButtonState();
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.value !== nextProps.value) {
-      this.updateIndicatorState(nextProps);
-    }
-  }
-
   componentDidUpdate(prevProps, prevState) {
     this.updateScrollButtonState();
-    if (
-      this.props.width !== prevProps.width ||
-      this.state.indicatorStyle !== prevState.indicatorStyle
-    ) {
+
+    // The index might have changed at the same time.
+    // We need to check again the right indicator position.
+    this.updateIndicatorState(this.props);
+
+    if (this.state.indicatorStyle !== prevState.indicatorStyle) {
       this.scrollSelectedIntoView();
     }
   }
@@ -181,6 +77,84 @@ class Tabs extends React.Component<AllProps, State> {
     this.handleResize.cancel();
     this.handleTabsScroll.cancel();
   }
+
+  getConditionalElements = () => {
+    const {
+      classes,
+      buttonClassName,
+      scrollable,
+      scrollButtons,
+      TabScrollButton: TabScrollButtonProp,
+      theme,
+    } = this.props;
+    const conditionalElements = {};
+    conditionalElements.scrollbarSizeListener = scrollable ? (
+      <ScrollbarSize
+        onLoad={this.handleScrollbarSizeChange}
+        onChange={this.handleScrollbarSizeChange}
+      />
+    ) : null;
+
+    const showScrollButtons = scrollable && (scrollButtons === 'auto' || scrollButtons === 'on');
+
+    conditionalElements.scrollButtonLeft = showScrollButtons ? (
+      <TabScrollButtonProp
+        direction={theme && theme.direction === 'rtl' ? 'right' : 'left'}
+        onClick={this.handleLeftScrollClick}
+        visible={this.state.showLeftScroll}
+        className={classNames(
+          {
+            [classes.buttonAuto]: scrollButtons === 'auto',
+          },
+          buttonClassName,
+        )}
+      />
+    ) : null;
+
+    conditionalElements.scrollButtonRight = showScrollButtons ? (
+      <TabScrollButtonProp
+        direction={theme && theme.direction === 'rtl' ? 'left' : 'right'}
+        onClick={this.handleRightScrollClick}
+        visible={this.state.showRightScroll}
+        className={classNames(
+          {
+            [classes.buttonAuto]: scrollButtons === 'auto',
+          },
+          buttonClassName,
+        )}
+      />
+    ) : null;
+
+    return conditionalElements;
+  };
+
+  getTabsMeta = (value, direction) => {
+    let tabsMeta;
+    if (this.tabs) {
+      const rect = this.tabs.getBoundingClientRect();
+      // create a new object with ClientRect class props + scrollLeft
+      tabsMeta = {
+        clientWidth: this.tabs ? this.tabs.clientWidth : 0,
+        scrollLeft: this.tabs ? this.tabs.scrollLeft : 0,
+        scrollLeftNormalized: this.tabs ? getNormalizedScrollLeft(this.tabs, direction) : 0,
+        scrollWidth: this.tabs ? this.tabs.scrollWidth : 0,
+        left: rect.left,
+        right: rect.right,
+      };
+    }
+
+    let tabMeta;
+    if (this.tabs && value !== false) {
+      const children = this.tabs.children[0].children;
+
+      if (children.length > 0) {
+        const tab = children[this.valueToIndex[value]];
+        warning(Boolean(tab), `Material-UI: the value provided \`${value}\` is invalid`);
+        tabMeta = tab ? tab.getBoundingClientRect() : null;
+      }
+    }
+    return { tabsMeta, tabMeta };
+  };
 
   tabs: ?HTMLElement = undefined;
   valueToIndex: { [key: any]: any } = {};
@@ -214,92 +188,55 @@ class Tabs extends React.Component<AllProps, State> {
     this.updateScrollButtonState();
   }, 166);
 
-  getConditionalElements = () => {
-    const { buttonClassName, scrollable, scrollButtons, width } = this.props;
-    const conditionalElements = {};
-    conditionalElements.scrollbarSizeListener = scrollable ? (
-      <ScrollbarSize
-        onLoad={this.handleScrollbarSizeChange}
-        onChange={this.handleScrollbarSizeChange}
-      />
-    ) : null;
-
-    const showScrollButtons =
-      scrollable &&
-      ((isWidthUp('md', width) && scrollButtons === 'auto') || scrollButtons === 'on');
-
-    conditionalElements.scrollButtonLeft = showScrollButtons ? (
-      <TabScrollButton
-        direction="left"
-        onClick={this.handleLeftScrollClick}
-        visible={this.state.showLeftScroll}
-        className={buttonClassName}
-      />
-    ) : null;
-
-    conditionalElements.scrollButtonRight = showScrollButtons ? (
-      <TabScrollButton
-        className={buttonClassName}
-        direction="right"
-        onClick={this.handleRightScrollClick}
-        visible={this.state.showRightScroll}
-      />
-    ) : null;
-
-    return conditionalElements;
-  };
-
-  getTabsMeta = (value): { tabsMeta: ?TabsMeta, tabMeta: ?ClientRect } => {
-    let tabsMeta;
-    if (this.tabs) {
-      // create a new object with ClientRect class props + scrollLeft
-      tabsMeta = {
-        scrollLeft: this.tabs.scrollLeft,
-        ...pick(this.tabs.getBoundingClientRect(), [
-          'left',
-          'width',
-          'right',
-          'top',
-          'bottom',
-          'height',
-        ]),
-      };
-    }
-
-    let tabMeta;
-    if (this.tabs && value !== false) {
-      const tab = this.tabs.children[0].children[this.valueToIndex[value]];
-      warning(tab, `Material-UI: the value provided \`${value}\` is invalid`);
-      tabMeta = tab ? tab.getBoundingClientRect() : null;
-    }
-    return { tabsMeta, tabMeta };
-  };
-
   moveTabsScroll = delta => {
+    const { theme } = this.props;
+
     if (this.tabs) {
-      const nextScrollLeft = this.tabs.scrollLeft + delta;
-      scroll.left(this.tabs, nextScrollLeft);
+      const themeDirection = theme && theme.direction;
+      const multiplier = themeDirection === 'rtl' ? -1 : 1;
+      const nextScrollLeft = this.tabs.scrollLeft + delta * multiplier;
+      // Fix for Edge
+      const invert = themeDirection === 'rtl' && detectScrollType() === 'reverse' ? -1 : 1;
+      scroll.left(this.tabs, invert * nextScrollLeft);
     }
   };
 
   updateIndicatorState(props) {
-    const { tabsMeta, tabMeta } = this.getTabsMeta(props.value);
+    const { theme, value } = props;
+
+    const themeDirection = theme && theme.direction;
+    const { tabsMeta, tabMeta } = this.getTabsMeta(value, themeDirection);
+    let left = 0;
+
+    if (tabMeta && tabsMeta) {
+      const correction =
+        themeDirection === 'rtl'
+          ? tabsMeta.scrollLeftNormalized + tabsMeta.clientWidth - tabsMeta.scrollWidth
+          : tabsMeta.scrollLeft;
+      left = tabMeta.left - tabsMeta.left + correction;
+    }
+
     const indicatorStyle = {
-      left: tabMeta && tabsMeta ? tabMeta.left + (tabsMeta.scrollLeft - tabsMeta.left) : 0,
+      left,
       // May be wrong until the font is loaded.
       width: tabMeta ? tabMeta.width : 0,
     };
 
     if (
-      indicatorStyle.left !== this.state.indicatorStyle.left ||
-      indicatorStyle.width !== this.state.indicatorStyle.width
+      (indicatorStyle.left !== this.state.indicatorStyle.left ||
+        indicatorStyle.width !== this.state.indicatorStyle.width) &&
+      !Number.isNaN(indicatorStyle.left) &&
+      !Number.isNaN(indicatorStyle.width)
     ) {
       this.setState({ indicatorStyle });
     }
   }
 
   scrollSelectedIntoView = () => {
-    const { tabsMeta, tabMeta } = this.getTabsMeta(this.props.value);
+    const { theme, value } = this.props;
+
+    const themeDirection = theme && theme.direction;
+    const { tabsMeta, tabMeta } = this.getTabsMeta(value, themeDirection);
 
     if (!tabMeta || !tabsMeta) {
       return;
@@ -317,12 +254,18 @@ class Tabs extends React.Component<AllProps, State> {
   };
 
   updateScrollButtonState = () => {
-    const { scrollable, scrollButtons } = this.props;
+    const { scrollable, scrollButtons, theme } = this.props;
+    const themeDirection = theme && theme.direction;
 
     if (this.tabs && scrollable && scrollButtons !== 'off') {
-      const { scrollLeft, scrollWidth, clientWidth } = this.tabs;
-      const showLeftScroll = scrollLeft > 0;
-      const showRightScroll = scrollWidth > clientWidth + scrollLeft;
+      const { scrollWidth, clientWidth } = this.tabs;
+      const scrollLeft = getNormalizedScrollLeft(this.tabs, themeDirection);
+
+      const showLeftScroll =
+        themeDirection === 'rtl' ? scrollWidth > clientWidth + scrollLeft : scrollLeft > 0;
+
+      const showRightScroll =
+        themeDirection === 'rtl' ? scrollLeft > 0 : scrollWidth > clientWidth + scrollLeft;
 
       if (
         showLeftScroll !== this.state.showLeftScroll ||
@@ -337,8 +280,8 @@ class Tabs extends React.Component<AllProps, State> {
     const {
       buttonClassName,
       centered,
-      classes,
       children: childrenProp,
+      classes,
       className: classNameProp,
       fullWidth,
       indicatorClassName,
@@ -346,9 +289,10 @@ class Tabs extends React.Component<AllProps, State> {
       onChange,
       scrollable,
       scrollButtons,
+      TabScrollButton: TabScrollButtonProp,
       textColor,
+      theme,
       value,
-      width,
       ...other
     } = this.props;
 
@@ -361,13 +305,30 @@ class Tabs extends React.Component<AllProps, State> {
       [classes.centered]: centered && !scrollable,
     });
 
+    const indicator = (
+      <TabIndicator
+        style={this.state.indicatorStyle}
+        className={indicatorClassName}
+        color={indicatorColor}
+      />
+    );
+
     this.valueToIndex = {};
-    const children = React.Children.map(childrenProp, (child, childIndex) => {
+    let childIndex = 0;
+    const children = React.Children.map(childrenProp, child => {
+      if (!React.isValidElement(child)) {
+        return null;
+      }
+
       const childValue = child.props.value || childIndex;
       this.valueToIndex[childValue] = childIndex;
+      const selected = childValue === value;
+
+      childIndex += 1;
       return React.cloneElement(child, {
         fullWidth,
-        selected: childValue === value,
+        indicator: selected && !this.state.mounted && indicator,
+        selected,
         onChange,
         textColor,
         value: childValue,
@@ -392,11 +353,7 @@ class Tabs extends React.Component<AllProps, State> {
             onScroll={this.handleTabsScroll}
           >
             <div className={tabItemContainerClassName}>{children}</div>
-            <TabIndicator
-              style={this.state.indicatorStyle}
-              className={indicatorClassName}
-              color={indicatorColor}
-            />
+            {this.state.mounted && indicator}
           </div>
           {conditionalElements.scrollButtonRight}
         </div>
@@ -405,4 +362,87 @@ class Tabs extends React.Component<AllProps, State> {
   }
 }
 
-export default compose(withStyles(styles, { name: 'MuiTabs' }), withWidth())(Tabs);
+Tabs.propTypes = {
+  /**
+   * The CSS class name of the scroll button elements.
+   */
+  buttonClassName: PropTypes.string,
+  /**
+   * If `true`, the tabs will be centered.
+   * This property is intended for large views.
+   */
+  centered: PropTypes.bool,
+  /**
+   * The content of the component.
+   */
+  children: PropTypes.node,
+  /**
+   * Useful to extend the style applied to components.
+   */
+  classes: PropTypes.object.isRequired,
+  /**
+   * @ignore
+   */
+  className: PropTypes.string,
+  /**
+   * If `true`, the tabs will grow to use all the available space.
+   * This property is intended for small views, like on mobile.
+   */
+  fullWidth: PropTypes.bool,
+  /**
+   * The CSS class name of the indicator element.
+   */
+  indicatorClassName: PropTypes.string,
+  /**
+   * Determines the color of the indicator.
+   */
+  indicatorColor: PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf(['accent', 'primary'])]),
+  /**
+   * Callback fired when the value changes.
+   *
+   * @param {object} event The event source of the callback
+   * @param {number} value We default to the index of the child
+   */
+  onChange: PropTypes.func,
+  /**
+   * True invokes scrolling properties and allow for horizontally scrolling
+   * (or swiping) the tab bar.
+   */
+  scrollable: PropTypes.bool,
+  /**
+   * Determine behavior of scroll buttons when tabs are set to scroll
+   * `auto` will only present them on medium and larger viewports
+   * `on` will always present them
+   * `off` will never present them
+   */
+  scrollButtons: PropTypes.oneOf(['auto', 'on', 'off']),
+  /**
+   * The component used to render the scroll buttons.
+   */
+  TabScrollButton: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
+  /**
+   * Determines the color of the `Tab`.
+   */
+  textColor: PropTypes.oneOf(['accent', 'primary', 'inherit']),
+  /**
+   * @ignore
+   */
+  theme: PropTypes.object.isRequired,
+  /**
+   * The value of the currently selected `Tab`.
+   * If you don't want any selected `Tab`, you can set this property to `false`.
+   */
+  value: PropTypes.any,
+};
+
+Tabs.defaultProps = {
+  centered: false,
+  fullWidth: false,
+  indicatorColor: 'accent',
+  scrollable: false,
+  scrollButtons: 'auto',
+  TabScrollButton,
+  textColor: 'inherit',
+};
+
+export default withStyles(styles, { name: 'MuiTabs', withTheme: true })(Tabs);

@@ -1,5 +1,3 @@
-// @flow
-
 import React from 'react';
 import withRoot from 'docs/src/modules/components/withRoot';
 import MarkdownDocs from 'docs/src/modules/components/MarkdownDocs';
@@ -10,11 +8,11 @@ function Page() {
     <MarkdownDocs
       markdown={markdown}
       demos={{
-        'pages/style/Typography.js': {
-          js: require('docs/src/pages/style/Typography').default,
+        'pages/style/Types.js': {
+          js: require('docs/src/pages/style/Types').default,
           raw: preval`
 module.exports = require('fs')
-  .readFileSync(require.resolve('docs/src/pages/style/Typography'), 'utf8')
+  .readFileSync(require.resolve('docs/src/pages/style/Types'), 'utf8')
 `,
         },
         'pages/style/TypographyTheme.js': {

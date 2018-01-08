@@ -1,13 +1,12 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
 /* eslint-disable no-console */
 
 import { mkdir, readFileSync, writeFileSync } from 'fs';
 import path from 'path';
 import kebabCase from 'lodash/kebabCase';
-import * as reactDocgen from 'react-docgen';
+import * as reactDocgen from '@rosskevin/react-docgen';
 import generateMarkdown from '../src/modules/utils/generateMarkdown';
 import { findPagesMarkdown, findComponents } from '../src/modules/utils/find';
-import { getComponents } from '../src/modules/utils/parseMarkdown';
+import { getHeaders } from '../src/modules/utils/parseMarkdown';
 import createMuiTheme from '../../src/styles/createMuiTheme';
 import getStylesCreator from '../../src/styles/getStylesCreator';
 
@@ -25,14 +24,15 @@ function ensureExists(pat, mask, cb) {
   });
 }
 
-const docsApiDirectory = path.resolve(__dirname, '../../pages/api');
+const rootDirectory = path.resolve(__dirname, '../../');
+const docsApiDirectory = path.resolve(rootDirectory, 'pages/api');
 const theme = createMuiTheme();
 
 function buildDocs(options) {
   const { componentPath, pagesMarkdown } = options;
   const src = readFileSync(componentPath, 'utf8');
 
-  if (src.match(/@ignore - internal component\./)) {
+  if (src.match(/@ignore - internal component\./) || src.match(/@ignore - do not document\./)) {
     return;
   }
 
@@ -63,6 +63,13 @@ function buildDocs(options) {
   reactAPI.styles = styles;
   reactAPI.pagesMarkdown = pagesMarkdown;
   reactAPI.src = src;
+
+  // if (reactAPI.name !== 'TablePagination') {
+  //   return;
+  // }
+
+  // Relative location in the file system.
+  reactAPI.filename = componentPath.replace(rootDirectory, '');
   let markdown;
   try {
     markdown = generateMarkdown(reactAPI);
@@ -80,9 +87,7 @@ function buildDocs(options) {
     writeFileSync(path.resolve(docsApiDirectory, `${kebabCase(reactAPI.name)}.md`), markdown);
     writeFileSync(
       path.resolve(docsApiDirectory, `${kebabCase(reactAPI.name)}.js`),
-      `// @flow
-
-import React from 'react';
+      `import React from 'react';
 import withRoot from 'docs/src/modules/components/withRoot';
 import MarkdownDocs from 'docs/src/modules/components/MarkdownDocs';
 import markdown from './${kebabCase(reactAPI.name)}.md';
@@ -105,7 +110,7 @@ const pagesMarkdown = findPagesMarkdown()
 
     return {
       ...markdown,
-      components: getComponents(markdownSource),
+      components: getHeaders(markdownSource).components,
     };
   })
   .filter(markdown => markdown.components.length > 0);

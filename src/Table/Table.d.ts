@@ -1,7 +1,14 @@
 import * as React from 'react';
-import { StyledComponent } from '..';
+import { StandardProps } from '..';
 
-export interface TableProps
-  extends React.TableHTMLAttributes<HTMLTableElement> {}
+export interface TableProps extends StandardProps<TableBaseProps, TableClassKey> {
+  component?: React.ReactType<TableBaseProps>;
+}
 
-export default class Table extends StyledComponent<TableProps> {}
+export type TableBaseProps = React.TableHTMLAttributes<HTMLTableElement>;
+
+export type TableClassKey = 'root';
+
+declare const Table: React.ComponentType<TableProps>;
+
+export default Table;

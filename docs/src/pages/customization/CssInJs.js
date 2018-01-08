@@ -1,5 +1,3 @@
-// @flow weak
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
@@ -52,7 +50,7 @@ const MyLinkStyled = withStyles(styles)(MyLink);
 export default function CssInJs() {
   return (
     <Typography type="subheading">
-      <MyLinkStyled href="#">{'MyLink'}</MyLinkStyled>
+      <MyLinkStyled href="#">MyLink</MyLinkStyled>
       {' - '}
       <MyLinkStyled href="#" variant="primary">
         {'primary'}

@@ -1,4 +1,3 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
 /* eslint-disable react/no-multi-comp */
 
 import React from 'react';
@@ -50,11 +49,11 @@ class ConfirmationDialog extends React.Component {
   };
 
   handleCancel = () => {
-    this.props.onRequestClose(this.props.value);
+    this.props.onClose(this.props.value);
   };
 
   handleOk = () => {
-    this.props.onRequestClose(this.state.value);
+    this.props.onClose(this.state.value);
   };
 
   handleChange = (event, value) => {
@@ -66,16 +65,17 @@ class ConfirmationDialog extends React.Component {
 
     return (
       <Dialog
-        ignoreBackdropClick
-        ignoreEscapeKeyUp
+        disableBackdropClick
+        disableEscapeKeyDown
         maxWidth="xs"
         onEntering={this.handleEntering}
+        aria-labelledby="confirmation-dialog-title"
         {...other}
       >
-        <DialogTitle>Phone Ringtone</DialogTitle>
+        <DialogTitle id="confirmation-dialog-title">Phone Ringtone</DialogTitle>
         <DialogContent>
           <RadioGroup
-            innerRef={node => {
+            ref={node => {
               this.radioGroup = node;
             }}
             aria-label="ringtone"
@@ -102,7 +102,7 @@ class ConfirmationDialog extends React.Component {
 }
 
 ConfirmationDialog.propTypes = {
-  onRequestClose: PropTypes.func,
+  onClose: PropTypes.func,
   value: PropTypes.string,
 };
 
@@ -110,7 +110,7 @@ const styles = theme => ({
   root: {
     width: '100%',
     maxWidth: 360,
-    background: theme.palette.background.paper,
+    backgroundColor: theme.palette.background.paper,
   },
   dialog: {
     width: '80%',
@@ -120,23 +120,22 @@ const styles = theme => ({
 
 class ConfirmationDialogDemo extends React.Component {
   state = {
-    anchorEl: undefined,
     open: false,
     value: 'Dione',
   };
 
   button = undefined;
 
-  handleClickListItem = event => {
-    this.setState({ open: true, anchorEl: event.currentTarget });
+  handleClickListItem = () => {
+    this.setState({ open: true });
   };
 
-  handleRequestClose = value => {
+  handleClose = value => {
     this.setState({ value, open: false });
   };
 
   render() {
-    const classes = this.props.classes;
+    const { classes } = this.props;
     return (
       <div className={classes.root}>
         <List>
@@ -161,7 +160,7 @@ class ConfirmationDialogDemo extends React.Component {
               paper: classes.dialog,
             }}
             open={this.state.open}
-            onRequestClose={this.handleRequestClose}
+            onClose={this.handleClose}
             value={this.state.value}
           />
         </List>

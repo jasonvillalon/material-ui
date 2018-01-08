@@ -1,10 +1,16 @@
 import * as React from 'react';
-import { StyledComponent } from '..';
+import { StandardProps } from '..';
 
-export interface TableRowProps
-  extends React.HTMLAttributes<HTMLTableRowElement> {
+export interface TableRowProps extends StandardProps<TableRowBaseProps, TableRowClassKey> {
+  component?: React.ReactType<TableRowBaseProps>;
   hover?: boolean;
   selected?: boolean;
 }
 
-export default class TableRow extends StyledComponent<TableRowProps> {}
+export type TableRowBaseProps = React.HTMLAttributes<HTMLTableRowElement>;
+
+export type TableRowClassKey = 'root' | 'head' | 'footer' | 'hover' | 'selected';
+
+declare const TableRow: React.ComponentType<TableRowProps>;
+
+export default TableRow;

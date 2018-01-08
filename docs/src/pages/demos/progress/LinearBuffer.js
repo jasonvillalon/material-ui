@@ -1,5 +1,3 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -13,7 +11,6 @@ const styles = {
 };
 
 class LinearBuffer extends React.Component {
-  timer: number;
   state = {
     completed: 0,
     buffer: 10,
@@ -27,6 +24,8 @@ class LinearBuffer extends React.Component {
     clearInterval(this.timer);
   }
 
+  timer: number;
+
   progress = () => {
     const { completed } = this.state;
     if (completed > 100) {
@@ -39,7 +38,7 @@ class LinearBuffer extends React.Component {
   };
 
   render() {
-    const classes = this.props.classes;
+    const { classes } = this.props;
     const { completed, buffer } = this.state;
     return (
       <div className={classes.root}>

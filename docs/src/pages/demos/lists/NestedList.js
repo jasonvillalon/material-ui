@@ -1,5 +1,3 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -17,7 +15,7 @@ const styles = theme => ({
   root: {
     width: '100%',
     maxWidth: 360,
-    background: theme.palette.background.paper,
+    backgroundColor: theme.palette.background.paper,
   },
   nested: {
     paddingLeft: theme.spacing.unit * 4,
@@ -32,7 +30,8 @@ class NestedList extends React.Component {
   };
 
   render() {
-    const classes = this.props.classes;
+    const { classes } = this.props;
+
     return (
       <List className={classes.root} subheader={<ListSubheader>Nested List Items</ListSubheader>}>
         <ListItem button>
@@ -52,15 +51,17 @@ class NestedList extends React.Component {
             <InboxIcon />
           </ListItemIcon>
           <ListItemText inset primary="Inbox" />
-          {this.state.open ? <ExpandMore /> : <ExpandLess />}
+          {this.state.open ? <ExpandLess /> : <ExpandMore />}
         </ListItem>
-        <Collapse in={this.state.open} transitionDuration="auto" unmountOnExit>
-          <ListItem button className={classes.nested}>
-            <ListItemIcon>
-              <StarBorder />
-            </ListItemIcon>
-            <ListItemText inset primary="Starred" />
-          </ListItem>
+        <Collapse component="li" in={this.state.open} timeout="auto" unmountOnExit>
+          <List disablePadding>
+            <ListItem button className={classes.nested}>
+              <ListItemIcon>
+                <StarBorder />
+              </ListItemIcon>
+              <ListItemText inset primary="Starred" />
+            </ListItem>
+          </List>
         </Collapse>
       </List>
     );

@@ -1,23 +1,29 @@
-// @flow
-
 import React from 'react';
+import { spy } from 'sinon';
 import { assert } from 'chai';
-import { createShallow, getClasses } from '../test-utils';
+import { createShallow, createMount, getClasses } from '../test-utils';
 import Icon from '../Icon';
+import ButtonBase from '../ButtonBase';
 import IconButton from './IconButton';
 
 describe('<IconButton />', () => {
   let shallow;
   let classes;
+  let mount;
 
   before(() => {
     shallow = createShallow({ dive: true });
+    mount = createMount();
     classes = getClasses(<IconButton />);
+  });
+
+  after(() => {
+    mount.cleanUp();
   });
 
   it('should render a ButtonBase', () => {
     const wrapper = shallow(<IconButton>book</IconButton>);
-    assert.strictEqual(wrapper.name(), 'withStyles(ButtonBase)');
+    assert.strictEqual(wrapper.type(), ButtonBase);
   });
 
   it('should render an inner label span (bloody safari)', () => {
@@ -93,6 +99,15 @@ describe('<IconButton />', () => {
       const wrapper = shallow(<IconButton disabled>book</IconButton>);
       assert.strictEqual(wrapper.props().disabled, true, 'should pass the property down the tree');
       assert.strictEqual(wrapper.hasClass(classes.disabled), true, 'should add the disabled class');
+    });
+  });
+
+  describe('prop: buttonRef', () => {
+    it('should give a reference on the native button', () => {
+      const ref = spy();
+      mount(<IconButton buttonRef={ref} />);
+      assert.strictEqual(ref.callCount, 1);
+      assert.strictEqual(ref.args[0][0].type, 'button');
     });
   });
 });

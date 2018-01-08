@@ -1,19 +1,28 @@
 import * as React from 'react';
-import { StyledComponent } from '..';
-import { ModalProps } from '../internal/Modal';
+import { StandardProps } from '..';
+import { ModalProps, ModalClassKey } from '../Modal';
+import { TransitionDuration, TransitionHandlers } from '../internal/transition';
 
-export type DialogProps = {
+export interface DialogProps
+  extends StandardProps<ModalProps & Partial<TransitionHandlers>, DialogClassKey, 'children'> {
+  children?: React.ReactNode;
   fullScreen?: boolean;
-  ignoreBackdropClick?: boolean;
-  ignoreEscapeKeyUp?: boolean;
-  enterTransitionDuration?: number | string;
-  leaveTransitionDuration?: number | string;
-  maxWidth?: 'xs' | 'sm' | 'md';
-  onBackdropClick?: Function;
-  onEscapeKeyUp?: Function;
-  onRequestClose?: React.EventHandler<any>;
-  open?: boolean;
-  transition?: Function | React.ReactElement<any>;
-} & ModalProps;
+  fullWidth?: boolean;
+  maxWidth?: 'xs' | 'sm' | 'md' | false;
+  transition?: React.ReactType;
+  transitionDuration?: TransitionDuration;
+}
 
-export default class Dialog extends StyledComponent<DialogProps> {}
+export type DialogClassKey =
+  | ModalClassKey
+  | 'root'
+  | 'paper'
+  | 'paperWidthXs'
+  | 'paperWidthSm'
+  | 'paperWidthMd'
+  | 'fullWidth'
+  | 'fullScreen';
+
+declare const Dialog: React.ComponentType<DialogProps>;
+
+export default Dialog;

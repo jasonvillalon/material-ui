@@ -1,12 +1,10 @@
-// @flow
-
 import React from 'react';
-import type { Node } from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import withStyles from '../styles/withStyles';
 import { capitalizeFirstLetter } from '../utils/helpers';
 
-export const styles = (theme: Object) => ({
+export const styles = theme => ({
   root: {
     userSelect: 'none',
   },
@@ -30,33 +28,7 @@ export const styles = (theme: Object) => ({
   },
 });
 
-type DefaultProps = {
-  classes: Object,
-  color: 'inherit',
-};
-
-export type Props = {
-  /**
-   * The name of the icon font ligature.
-   */
-  children?: Node,
-  /**
-   * Useful to extend the style applied to components.
-   */
-  classes?: Object,
-  /**
-   * @ignore
-   */
-  className?: string,
-  /**
-   * The color of the component. It's using the theme palette when that makes sense.
-   */
-  color?: 'inherit' | 'accent' | 'action' | 'contrast' | 'disabled' | 'error' | 'primary',
-};
-
-type AllProps = DefaultProps & Props;
-
-function Icon(props: AllProps) {
+function Icon(props) {
   const { children, classes, className: classNameProp, color, ...other } = props;
 
   const className = classNames(
@@ -74,6 +46,33 @@ function Icon(props: AllProps) {
     </span>
   );
 }
+
+Icon.propTypes = {
+  /**
+   * The name of the icon font ligature.
+   */
+  children: PropTypes.node,
+  /**
+   * Useful to extend the style applied to components.
+   */
+  classes: PropTypes.object.isRequired,
+  /**
+   * @ignore
+   */
+  className: PropTypes.string,
+  /**
+   * The color of the component. It's using the theme palette when that makes sense.
+   */
+  color: PropTypes.oneOf([
+    'inherit',
+    'accent',
+    'action',
+    'contrast',
+    'disabled',
+    'error',
+    'primary',
+  ]),
+};
 
 Icon.defaultProps = {
   color: 'inherit',

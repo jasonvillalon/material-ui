@@ -1,6 +1,3 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-/* eslint-disable react/no-multi-comp */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -13,9 +10,14 @@ import HelpIcon from 'material-ui-icons/Help';
 import ShoppingBasket from 'material-ui-icons/ShoppingBasket';
 import ThumbDown from 'material-ui-icons/ThumbDown';
 import ThumbUp from 'material-ui-icons/ThumbUp';
+import Typography from 'material-ui/Typography';
 
 function TabContainer(props) {
-  return <div style={{ padding: 20 }}>{props.children}</div>;
+  return (
+    <Typography component="div" style={{ padding: 8 * 3 }}>
+      {props.children}
+    </Typography>
+  );
 }
 
 TabContainer.propTypes = {
@@ -64,13 +66,13 @@ class ScrollableTabsButtonForce extends React.Component {
             <Tab label="Item Seven" icon={<ThumbUp />} />
           </Tabs>
         </AppBar>
-        {value === 0 && <TabContainer>{'Item One'}</TabContainer>}
-        {value === 1 && <TabContainer>{'Item Two'}</TabContainer>}
-        {value === 2 && <TabContainer>{'Item Three'}</TabContainer>}
-        {value === 3 && <TabContainer>{'Item Four'}</TabContainer>}
-        {value === 4 && <TabContainer>{'Item Five'}</TabContainer>}
-        {value === 5 && <TabContainer>{'Item Six'}</TabContainer>}
-        {value === 6 && <TabContainer>{'Item Seven'}</TabContainer>}
+        {value === 0 && <TabContainer>Item One</TabContainer>}
+        {value === 1 && <TabContainer>Item Two</TabContainer>}
+        {value === 2 && <TabContainer>Item Three</TabContainer>}
+        {value === 3 && <TabContainer>Item Four</TabContainer>}
+        {value === 4 && <TabContainer>Item Five</TabContainer>}
+        {value === 5 && <TabContainer>Item Six</TabContainer>}
+        {value === 6 && <TabContainer>Item Seven</TabContainer>}
       </div>
     );
   }

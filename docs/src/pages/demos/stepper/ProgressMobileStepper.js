@@ -1,9 +1,10 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import MobileStepper from 'material-ui/MobileStepper';
+import Button from 'material-ui/Button';
+import KeyboardArrowLeft from 'material-ui-icons/KeyboardArrowLeft';
+import KeyboardArrowRight from 'material-ui-icons/KeyboardArrowRight';
 
 const styles = {
   root: {
@@ -30,7 +31,8 @@ class ProgressMobileStepper extends React.Component {
   };
 
   render() {
-    const classes = this.props.classes;
+    const { classes, theme } = this.props;
+
     return (
       <MobileStepper
         type="progress"
@@ -38,10 +40,18 @@ class ProgressMobileStepper extends React.Component {
         position="static"
         activeStep={this.state.activeStep}
         className={classes.root}
-        onBack={this.handleBack}
-        onNext={this.handleNext}
-        disableBack={this.state.activeStep === 0}
-        disableNext={this.state.activeStep === 5}
+        nextButton={
+          <Button dense onClick={this.handleNext} disabled={this.state.activeStep === 5}>
+            Next
+            {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+          </Button>
+        }
+        backButton={
+          <Button dense onClick={this.handleBack} disabled={this.state.activeStep === 0}>
+            {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+            Back
+          </Button>
+        }
       />
     );
   }
@@ -49,6 +59,7 @@ class ProgressMobileStepper extends React.Component {
 
 ProgressMobileStepper.propTypes = {
   classes: PropTypes.object.isRequired,
+  theme: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ProgressMobileStepper);
+export default withStyles(styles, { withTheme: true })(ProgressMobileStepper);

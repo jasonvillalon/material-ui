@@ -1,16 +1,13 @@
-// @flow
-
 import React from 'react';
-import type { Node } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import withStyles from '../styles/withStyles';
 
-export const styles = (theme: Object) => ({
+export const styles = theme => ({
   root: {
     color: theme.palette.input.helperText,
     fontFamily: theme.typography.fontFamily,
-    fontSize: 12,
+    fontSize: theme.typography.pxToRem(12),
     textAlign: 'left',
     marginTop: theme.spacing.unit,
     lineHeight: '1em',
@@ -28,41 +25,7 @@ export const styles = (theme: Object) => ({
   },
 });
 
-type DefaultProps = {
-  classes: Object,
-};
-
-export type Props = {
-  /**
-   * The content of the component.
-   */
-  children?: Node,
-  /**
-   * Useful to extend the style applied to components.
-   */
-  classes?: Object,
-  /**
-   * @ignore
-   */
-  className?: string,
-  /**
-   * If `true`, the helper text should be displayed in a disabled state.
-   */
-  disabled?: boolean,
-  /**
-   * If `true`, helper text should be displayed in an error state.
-   */
-  error?: boolean,
-  /**
-   * If `dense`, will adjust vertical spacing. This is normally obtained via context from
-   * FormControl.
-   */
-  margin?: 'dense',
-};
-
-type AllProps = DefaultProps & Props;
-
-function FormHelperText(props: AllProps, context: { muiFormControl: Object }) {
+function FormHelperText(props, context) {
   const {
     children,
     classes,
@@ -108,6 +71,34 @@ function FormHelperText(props: AllProps, context: { muiFormControl: Object }) {
     </p>
   );
 }
+
+FormHelperText.propTypes = {
+  /**
+   * The content of the component.
+   */
+  children: PropTypes.node,
+  /**
+   * Useful to extend the style applied to components.
+   */
+  classes: PropTypes.object.isRequired,
+  /**
+   * @ignore
+   */
+  className: PropTypes.string,
+  /**
+   * If `true`, the helper text should be displayed in a disabled state.
+   */
+  disabled: PropTypes.bool,
+  /**
+   * If `true`, helper text should be displayed in an error state.
+   */
+  error: PropTypes.bool,
+  /**
+   * If `dense`, will adjust vertical spacing. This is normally obtained via context from
+   * FormControl.
+   */
+  margin: PropTypes.oneOf(['dense']),
+};
 
 FormHelperText.contextTypes = {
   muiFormControl: PropTypes.object,

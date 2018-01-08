@@ -1,6 +1,4 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import Button from 'material-ui/Button';
 import Dialog, {
@@ -10,22 +8,22 @@ import Dialog, {
   DialogActions,
 } from 'material-ui/Dialog';
 import Typography from 'material-ui/Typography';
-import withStyles from 'material-ui/styles/withStyles';
-import withRoot from '../components/withRoot';
+import { withStyles } from 'material-ui/styles';
+import withRoot from '../src/withRoot';
 
-const styles = {
+const styles = theme => ({
   root: {
     textAlign: 'center',
-    paddingTop: 200,
+    paddingTop: theme.spacing.unit * 20,
   },
-};
+});
 
-class Index extends Component {
+class Index extends React.Component {
   state = {
     open: false,
   };
 
-  handleRequestClose = () => {
+  handleClose = () => {
     this.setState({
       open: false,
     });
@@ -38,15 +36,18 @@ class Index extends Component {
   };
 
   render() {
+    const { classes } = this.props;
+    const { open } = this.state;
+
     return (
-      <div className={this.props.classes.root}>
-        <Dialog open={this.state.open} onRequestClose={this.handleRequestClose}>
+      <div className={classes.root}>
+        <Dialog open={open} onClose={this.handleClose}>
           <DialogTitle>Super Secret Password</DialogTitle>
           <DialogContent>
             <DialogContentText>1-2-3-4-5</DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button color="primary" onClick={this.handleRequestClose}>
+            <Button color="primary" onClick={this.handleClose}>
               OK
             </Button>
           </DialogActions>

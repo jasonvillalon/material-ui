@@ -1,5 +1,3 @@
-// @flow
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import kebabCase from 'lodash/kebabCase';
@@ -10,7 +8,8 @@ import Button from 'material-ui/Button';
 import AppContent from 'docs/src/modules/components/AppContent';
 import MarkdownElement from 'docs/src/modules/components/MarkdownElement';
 import Demo from 'docs/src/modules/components/Demo';
-import { getComponents, getContents, getTitle } from 'docs/src/modules/utils/parseMarkdown';
+import Carbon from 'docs/src/modules/components/Carbon';
+import { getHeaders, getContents, getTitle } from 'docs/src/modules/utils/parseMarkdown';
 
 const styles = {
   root: {
@@ -23,28 +22,28 @@ const styles = {
   },
 };
 
-const demoRegexp = /^demo='(.*)'$/;
-const SOURCE_CODE_ROOT_URL = 'https://github.com/callemall/material-ui/tree/v1-beta';
+const demoRegexp = /^"demo": "(.*)"/;
+const SOURCE_CODE_ROOT_URL = 'https://github.com/mui-org/material-ui/tree/v1-beta';
 
 function MarkdownDocs(props, context) {
-  const { classes, demos, markdown, sourceLocation: sourceLocationProp } = props;
+  const { classes, demos, markdown, markdownLocation: markdownLocationProp } = props;
   const contents = getContents(markdown);
-  const components = getComponents(markdown);
+  const headers = getHeaders(markdown);
 
-  let sourceLocation = sourceLocationProp || context.activePage.pathname;
+  let markdownLocation = markdownLocationProp || context.activePage.pathname;
 
-  if (!sourceLocationProp) {
+  if (!markdownLocationProp) {
     // Hack for handling the nested demos
-    if (sourceLocation.indexOf('/demos') === 0) {
-      const token = sourceLocation.split('/');
+    if (markdownLocation.indexOf('/demos') === 0) {
+      const token = markdownLocation.split('/');
       token.push(token[token.length - 1]);
-      sourceLocation = token.join('/');
+      markdownLocation = token.join('/');
     }
 
-    if (sourceLocation.indexOf('/api') === 0) {
-      sourceLocation = `/pages/${sourceLocation}.md`;
+    if (headers.filename) {
+      markdownLocation = headers.filename;
     } else {
-      sourceLocation = `/docs/src/pages${sourceLocation}.md`;
+      markdownLocation = `/docs/src/pages${markdownLocation}.md`;
     }
   }
 
@@ -54,30 +53,41 @@ function MarkdownDocs(props, context) {
         <title>{`${getTitle(markdown)} - Material-UI`}</title>
       </Head>
       <div className={classes.header}>
-        <Button component="a" href={`${SOURCE_CODE_ROOT_URL}${sourceLocation}`}>
+        <Button component="a" href={`${SOURCE_CODE_ROOT_URL}${markdownLocation}`}>
           {'Edit this page'}
         </Button>
       </div>
+      <Carbon key={markdownLocation} />
       {contents.map(content => {
         const match = content.match(demoRegexp);
 
-        if (match) {
-          const name = match[1];
+        if (match && demos) {
+          const demoOptions = JSON.parse(`{${content}}`);
+
+          const name = demoOptions.demo;
           warning(demos && demos[name], `Missing demo: ${name}.`);
-          return <Demo key={content} name={name} js={demos[name].js} raw={demos[name].raw} />;
+          return (
+            <Demo
+              key={content}
+              js={demos[name].js}
+              raw={demos[name].raw}
+              demoOptions={demoOptions}
+              githubLocation={`${SOURCE_CODE_ROOT_URL}/docs/src/${name}`}
+            />
+          );
         }
 
         return <MarkdownElement key={content} text={content} />;
       })}
-      {components.length > 0 ? (
+      {headers.components.length > 0 ? (
         <MarkdownElement
           text={`
 ## API
 
-${components
+${headers.components
             .map(component => `- [&lt;${component} /&gt;](/api/${kebabCase(component)})`)
             .join('\n')}
-            `}
+          `}
         />
       ) : null}
     </AppContent>
@@ -90,7 +100,7 @@ MarkdownDocs.propTypes = {
   markdown: PropTypes.string.isRequired,
   // You can define the direction location of the markdown file.
   // Otherwise, we try to determine it with an heuristic.
-  sourceLocation: PropTypes.string,
+  markdownLocation: PropTypes.string,
 };
 
 MarkdownDocs.contextTypes = {

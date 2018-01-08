@@ -1,11 +1,12 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import MobileStepper from 'material-ui/MobileStepper';
 import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
+import Button from 'material-ui/Button';
+import KeyboardArrowLeft from 'material-ui-icons/KeyboardArrowLeft';
+import KeyboardArrowRight from 'material-ui-icons/KeyboardArrowRight';
 
 const styles = theme => ({
   root: {
@@ -18,7 +19,7 @@ const styles = theme => ({
     height: 50,
     paddingLeft: theme.spacing.unit * 4,
     marginBottom: 20,
-    background: theme.palette.background.default,
+    backgroundColor: theme.palette.background.default,
   },
 });
 
@@ -40,7 +41,8 @@ class TextMobileStepper extends React.Component {
   };
 
   render() {
-    const classes = this.props.classes;
+    const { classes, theme } = this.props;
+
     return (
       <div className={classes.root}>
         <Paper square elevation={0} className={classes.header}>
@@ -52,10 +54,18 @@ class TextMobileStepper extends React.Component {
           position="static"
           activeStep={this.state.activeStep}
           className={classes.mobileStepper}
-          onBack={this.handleBack}
-          onNext={this.handleNext}
-          disableBack={this.state.activeStep === 0}
-          disableNext={this.state.activeStep === 5}
+          nextButton={
+            <Button dense onClick={this.handleNext} disabled={this.state.activeStep === 5}>
+              Next
+              {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+            </Button>
+          }
+          backButton={
+            <Button dense onClick={this.handleBack} disabled={this.state.activeStep === 0}>
+              {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+              Back
+            </Button>
+          }
         />
       </div>
     );
@@ -64,6 +74,7 @@ class TextMobileStepper extends React.Component {
 
 TextMobileStepper.propTypes = {
   classes: PropTypes.object.isRequired,
+  theme: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(TextMobileStepper);
+export default withStyles(styles, { withTheme: true })(TextMobileStepper);

@@ -1,5 +1,3 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -28,8 +26,7 @@ class InteractiveGrid extends React.Component {
   state = {
     direction: 'row',
     justify: 'center',
-    align: 'center',
-    gutter: '16',
+    alignItems: 'center',
   };
 
   handleChange = key => (event, value) => {
@@ -39,15 +36,15 @@ class InteractiveGrid extends React.Component {
   };
 
   render() {
-    const classes = this.props.classes;
-    const { align, direction, justify } = this.state;
+    const { classes } = this.props;
+    const { alignItems, direction, justify } = this.state;
     return (
       <Grid container className={classes.root}>
         <Grid item xs={12}>
           <Grid
             container
             className={classes.demo}
-            align={align}
+            alignItems={alignItems}
             direction={direction}
             justify={justify}
           >
@@ -113,12 +110,12 @@ class InteractiveGrid extends React.Component {
               </Grid>
               <Grid item xs={6} sm={4}>
                 <FormControl component="fieldset">
-                  <FormLabel>align</FormLabel>
+                  <FormLabel>alignItems</FormLabel>
                   <RadioGroup
-                    name="align"
-                    aria-label="align"
-                    value={align}
-                    onChange={this.handleChange('align')}
+                    name="alignItems"
+                    aria-label="alignItems"
+                    value={alignItems}
+                    onChange={this.handleChange('alignItems')}
                   >
                     <FormControlLabel value="flex-start" control={<Radio />} label="flex-start" />
                     <FormControlLabel value="center" control={<Radio />} label="center" />

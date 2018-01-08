@@ -1,14 +1,11 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-/* eslint-disable react/no-array-index-key */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import Autosuggest from 'react-autosuggest';
+import match from 'autosuggest-highlight/match';
+import parse from 'autosuggest-highlight/parse';
 import TextField from 'material-ui/TextField';
 import Paper from 'material-ui/Paper';
 import { MenuItem } from 'material-ui/Menu';
-import match from 'autosuggest-highlight/match';
-import parse from 'autosuggest-highlight/parse';
 import { withStyles } from 'material-ui/styles';
 
 const suggestions = [
@@ -49,11 +46,11 @@ const suggestions = [
 ];
 
 function renderInput(inputProps) {
-  const { classes, home, value, ref, ...other } = inputProps;
+  const { classes, autoFocus, value, ref, ...other } = inputProps;
 
   return (
     <TextField
-      autoFocus={home}
+      autoFocus={autoFocus}
       className={classes.textField}
       value={value}
       inputRef={ref}
@@ -76,11 +73,11 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
       <div>
         {parts.map((part, index) => {
           return part.highlight ? (
-            <span key={index} style={{ fontWeight: 300 }}>
+            <span key={String(index)} style={{ fontWeight: 300 }}>
               {part.text}
             </span>
           ) : (
-            <strong key={index} style={{ fontWeight: 500 }}>
+            <strong key={String(index)} style={{ fontWeight: 500 }}>
               {part.text}
             </strong>
           );
